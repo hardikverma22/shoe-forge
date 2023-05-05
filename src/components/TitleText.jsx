@@ -28,7 +28,7 @@ const TitleText = () => {
       className="absolute top-5 left-5
                   md:text-7xl text-3xl font-extrabold
                   bg-clip-text text-transparent bg-contain py-2"
-      style={{ backgroundImage: `url("shoe/${snap.mesh.texture}.jpg")` }}
+      style={{ backgroundImage: `url("${snap.mesh.texture}.jpg")` }}
     >
       <span className="w-full h-full">Shoe Forge</span>
     </motion.div>

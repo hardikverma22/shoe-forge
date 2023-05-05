@@ -6,7 +6,7 @@ import { state } from "../store";
 import { useFrame } from "@react-three/fiber";
 
 const Shoe = () => {
-  const { nodes, materials } = useGLTF("/shoe/shoe.gltf");
+  const { nodes, materials } = useGLTF("shoe.gltf");
   const [
     blueTexture,
     colorTexture,
@@ -18,12 +18,12 @@ const Shoe = () => {
     pumaTexture,
   ] = useTexture(
     [
-      "shoe/blue-texture.jpg",
-      "shoe/color-texture.jpg",
-      "shoe/floor-texture.jpg",
-      "shoe/jeans-texture.jpg",
-      "shoe/pattern-texture.jpg",
-      "shoe/table-texture.jpg",
+      "blue-texture.jpg",
+      "color-texture.jpg",
+      "floor-texture.jpg",
+      "jeans-texture.jpg",
+      "pattern-texture.jpg",
+      "table-texture.jpg",
       "nike.png",
       "puma.png",
     ],
@@ -193,14 +193,14 @@ const Shoe = () => {
   );
 };
 
-useGLTF.preload("/shoe/shoe.gltf");
+useGLTF.preload("shoe.gltf");
 [
-  "shoe/blue-texture.jpg",
-  "shoe/color-texture.jpg",
-  "shoe/floor-texture.jpg",
-  "shoe/jeans-texture.jpg",
-  "shoe/pattern-texture.jpg",
-  "shoe/table-texture.jpg",
+  "blue-texture.jpg",
+  "color-texture.jpg",
+  "floor-texture.jpg",
+  "jeans-texture.jpg",
+  "pattern-texture.jpg",
+  "table-texture.jpg",
 ].forEach(useTexture.preload);
 
 export default Shoe;

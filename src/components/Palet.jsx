@@ -77,7 +77,7 @@ const Palet = ({ title, stateColor }) => {
             <div
               className="w-6 h-6 rounded-full bg-contain bg-no-repeat bg-origin-content"
               style={{
-                backgroundImage: `url("./shoe/${snapshot[stateColor].texture}-thumb.png")`,
+                backgroundImage: `url("./${snapshot[stateColor].texture}-thumb.png")`,
               }}
             />
           )}
@@ -112,7 +112,7 @@ const Palet = ({ title, stateColor }) => {
                       : "w-6 h-6"
                   }`}
                   style={{
-                    backgroundImage: `url("./shoe/${texture}-thumb.png")`,
+                    backgroundImage: `url("./${texture}-thumb.png")`,
                   }}
                 />
               ))}
