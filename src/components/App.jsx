@@ -37,7 +37,7 @@ const App = () => {
     <AnimatePresence mode="wait">
       {loaded ? (
         <div className="w-full h-full overflow-x-hidden relative">
-          <div className="h-full">
+          <div className="h-full" id="canvasRoot">
             <Canvas />
           </div>
           <div className="absolute top-0 right-0 h-full">

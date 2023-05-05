@@ -14,7 +14,11 @@ import { state } from "../store";
 
 const CanvasContainer = () => {
   return (
-    <Canvas>
+    <Canvas
+      eventSource={document.getElementById("root")}
+      gl={{ preserveDrawingBuffer: true }}
+      eventPrefix="client"
+    >
       <mesh>
         <ambientLight intensity={1} />
         <pointLight intensity={1} />
@@ -31,7 +35,7 @@ const CanvasContainer = () => {
   );
 };
 
-function Env({ perfSucks }) {
+const Env = ({ perfSucks }) => {
   const ref = useRef();
   const snap = useSnapshot(state);
   // Runtime environments can be too slow on some systems, better safe than sorry with PerfMon
@@ -88,7 +92,7 @@ function Env({ perfSucks }) {
         <Lightformer
           intensity={5}
           form="ring"
-          color={snap.mesh.color === "#FFFFFF" ? "yellow": snap.mesh.color}
+          color={snap.mesh.color === "#FFFFFF" ? "yellow" : snap.mesh.color}
           rotation-y={Math.PI / 2}
           position={[-5, 2, -1]}
           scale={[10, 10, 1]}
@@ -96,6 +100,6 @@ function Env({ perfSucks }) {
       </group>
     </Environment>
   );
-}
+};
 
 export default CanvasContainer;
