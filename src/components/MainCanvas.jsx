@@ -1,36 +1,40 @@
+import { Environment, Lightformer, OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import "./App.css";
-
-import {
-  Center,
-  OrbitControls,
-  Environment,
-  Lightformer,
-} from "@react-three/drei";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Suspense, useRef } from "react";
-import Shoe from "./Shoe";
-import { snapshot, useSnapshot } from "valtio";
+import { useSnapshot } from "valtio";
 import { state } from "../store";
+import CanvasLoader from "./CanvasLoader";
+import Shoe from "./Shoe";
+gsap.registerPlugin(ScrollTrigger);
 
-const CanvasContainer = () => {
+const MainCanvas = () => {
+  const snap = useSnapshot(state);
+
   return (
     <Canvas
+      camera={{
+        position: snap.intro
+          ? [1.9178048557224563, -0.9446855085124255, 4.519910820511159]
+          : [0.10339436526544493, -0.5747297609365829, 2.936178360954702],
+      }}
       eventSource={document.getElementById("root")}
       gl={{ preserveDrawingBuffer: true }}
       eventPrefix="client"
     >
-      <mesh>
-        <ambientLight intensity={1} />
-        <pointLight intensity={1} />
-        <directionalLight />
-        <Center>
-          <Suspense fallback={null}>
-            <Shoe />
-          </Suspense>
-        </Center>
-        <OrbitControls enableDamping={false} enablePan={false} />
-        <Env perfSucks={true} />
-      </mesh>
+      <pointLight intensity={1} />
+      <OrbitControls
+        enablePan={!snap.intro}
+        enableRotate={!snap.intro}
+        enableZoom={!snap.intro}
+      />
+      {/* <FrontShoe /> */}
+      <Suspense fallback={null}>
+        <Shoe />
+      </Suspense>
+      <ambientLight />
+      {/* {!snap.intro ? <Env perfSucks={true} /> : null} */}
     </Canvas>
   );
 };
@@ -42,7 +46,7 @@ const Env = ({ perfSucks }) => {
   return (
     <Environment
       frames={perfSucks ? 1 : Infinity}
-      preset="city"
+      preset="forest"
       resolution={256}
       background
       blur={0.8}
@@ -102,4 +106,4 @@ const Env = ({ perfSucks }) => {
   );
 };
 
-export default CanvasContainer;
+export default MainCanvas;

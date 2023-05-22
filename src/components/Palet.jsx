@@ -3,15 +3,7 @@ import { state } from "../store";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 
-const palet = {
-  hidden: { x: -30 },
-  show: {
-    x: 0,
-  },
-  exit: {
-    x: -30,
-  },
-};
+import { palet } from "../motion";
 
 const Palet = ({ title, stateColor }) => {
   const snapshot = useSnapshot(state);

@@ -1,9 +1,12 @@
 import { Decal, useGLTF, useTexture } from "@react-three/drei";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { useSnapshot } from "valtio";
 import { state } from "../store";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useControls } from "leva";
 
 const Shoe = () => {
   const { nodes, materials } = useGLTF("shoe.gltf");
@@ -39,6 +42,9 @@ const Shoe = () => {
       materials.patch.map = textureMapping[snap.patch.texture];
     }
   );
+
+  const tl = gsap.timeline();
+  const { camera, scene } = useThree();
 
   const textureMapping = {
     "floor-texture": floorTexture,
@@ -87,6 +93,104 @@ const Shoe = () => {
     [snap.patch.color]
   );
 
+  // const { cameraPosition, scenePosition, sceneRotation } = useControls({
+  //   cameraPosition: {
+  //     value: {
+  //       x: -0.68,
+  //       y: -0.84,
+  //       z: 3.12,
+  //     },
+  //     step: 0.05,
+  //   },
+  //   scenePosition: {
+  //     value: {
+  //       x: -1.85,
+  //       y: -2.5,
+  //       z: 0.1,
+  //     },
+  //     step: 0.05,
+  //   },
+
+  //   sceneRotation: {
+  //     value: {
+  //       x: 0.84,
+  //       y: 2.22,
+  //       z: 0.16,
+  //     },
+  //     step: 0.01,
+  //   },
+  // });
+
+  // useFrame(() => {
+  //   camera.position.x = cameraPosition.x;
+  //   camera.position.y = cameraPosition.y;
+  //   camera.position.z = cameraPosition.z;
+
+  //   scene.position.x = scenePosition.x;
+  //   scene.position.y = scenePosition.y;
+  //   scene.position.z = scenePosition.z;
+
+  //   scene.rotation.x = sceneRotation.x;
+  //   scene.rotation.y = sceneRotation.y;
+  //   scene.rotation.z = sceneRotation.z;
+  // });
+
+  useEffect(() => {
+    console.log(camera.position);
+    camera.position.set(
+      1.9178048557224552,
+      -0.9446855085124252,
+      4.519910820511158
+    );
+
+    console.log(camera.position);
+  }, [snap.intro]);
+
+  useLayoutEffect(() => {
+    if (snap.intro) {
+      new ScrollTrigger({});
+      tl.to(camera.position, {
+        x: -0.68,
+        y: -0.84,
+        z: 3.12,
+        scrollTrigger: {
+          trigger: ".second-section",
+          start: "top bottom",
+          end: "top top",
+          scrub: true, // smooth animations
+          immediateRender: false,
+          // markers: true,
+        },
+      })
+        .to(scene.position, {
+          x: -2.2,
+          y: -2.05,
+          z: 0.1,
+          scrollTrigger: {
+            trigger: ".second-section",
+            start: "top bottom",
+            end: "top top",
+            scrub: true, // smooth animations
+            immediateRender: false,
+            // markers: true,
+          },
+        })
+        .to(scene.rotation, {
+          x: 0.84,
+          y: 2.22,
+          z: 0.16,
+          scrollTrigger: {
+            trigger: ".second-section",
+            start: "top bottom",
+            end: "top top",
+            scrub: true, // smooth animations
+            immediateRender: false,
+            // markers: true,
+          },
+        });
+    }
+  });
+
   useEffect(() => {
     materials.mesh.color = meshColor;
     materials.mesh.map = textureMapping[snap.mesh.texture];
@@ -128,7 +232,9 @@ const Shoe = () => {
   ]);
 
   useFrame((state, delta) => {
-    groupRef.current.position.y += Math.sin(state.clock.getElapsedTime()) / 250;
+    if (!snap.intro)
+      groupRef.current.position.y +=
+        Math.sin(state.clock.getElapsedTime()) / 250;
   });
 
   const groupRef = useRef();
@@ -137,9 +243,10 @@ const Shoe = () => {
     <group
       castShadow
       dispose={null}
-      scale={snap.isMobile ? 1.5 : 3}
+      scale={snap.isMobile ? 1.5 : snap.intro ? 2 : 3}
       rotation={snap.rotation}
       ref={groupRef}
+      position={snap.intro ? [3, -0.2, 1] : [0, 0, 0]}
     >
       <mesh
         castShadow

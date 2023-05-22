@@ -1,11 +1,4 @@
 const LoadingScreen = () => {
-  const boxVariants = {
-    hover: { scale: 1.05, strokeWidth: 60 },
-    pressed: { scale: 0.95, strokeWidth: 35 },
-    checked: { stroke: "#FF008C" },
-    unchecked: { stroke: "#ddd", strokeWidth: 50 },
-  };
-
   return (
     <section className="bg-yellow-300 relative place-items-center grid h-screen w-screen gap-4">
       <div className="bg-white w-48 h-48  absolute animate-ping rounded-full delay-5s shadow-xl"></div>

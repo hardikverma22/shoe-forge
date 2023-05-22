@@ -1,22 +1,20 @@
-import Canvas from "./Canvas";
-import Overlay from "./Overlay";
-import TitleText from "./TitleText";
-import Decals from "./Decals";
+import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import LoadingScreen from "./LoadingScreen";
-import { motion, AnimatePresence } from "framer-motion";
-import { state } from "../store";
 import { useSnapshot } from "valtio";
+import { state } from "../store";
+import Home from "./Home";
+import LoadingScreen from "./LoadingScreen";
+import { useProgress } from "@react-three/drei";
 
 const App = () => {
   const [loaded, setloaded] = useState(false);
 
-  const snapshot = useSnapshot(state);
-  console.log(snapshot.isMobile);
+  const { progress } = useProgress();
+
   useEffect(() => {
-    let timer = setTimeout(() => setloaded(true), 3000);
-    () => clearTimeout(timer);
-  }, []);
+    if (progress) setloaded(true);
+    console.log(progress);
+  }, [progress]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 768px)");
@@ -34,29 +32,14 @@ const App = () => {
   }, []);
 
   return (
-    <AnimatePresence mode="wait">
-      {loaded ? (
-        <div className="w-full h-full overflow-x-hidden relative">
-          <div className="h-full" id="canvasRoot">
-            <Canvas />
-          </div>
-          <div className="absolute top-0 right-0 h-full">
-            <Overlay />
-          </div>
-          <TitleText />
-          <Decals />
-        </div>
-      ) : (
-        <motion.div
-          key="loader"
-          initial={{ x: 0 }}
-          exit={{ x: "-100%", transition: { duration: 0.5 } }}
-          className="w-full h-full overflow-x-hidden relative"
-        >
-          <LoadingScreen />
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <>
+      <div style={{ display: loaded ? "block" : "none" }}>
+        <Home />
+      </div>
+      <div style={{ display: loaded ? "none" : "block" }}>
+        <LoadingScreen />
+      </div>
+    </>
   );
 };
 

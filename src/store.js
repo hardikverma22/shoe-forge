@@ -1,5 +1,5 @@
 import { proxy } from 'valtio'
-import { watch } from 'valtio/utils'
+
 const state = proxy({
     mesh: { color: '#FFFFFF', texture: 'color-texture' },
     laces: { color: '#EFBD4E', texture: 'table-texture' },
@@ -14,7 +14,8 @@ const state = proxy({
     rotation: [0.9, -2.5, -0.2],
     decals: ['nike', 'puma'],
     selectedDecal: 'nike',
-    isMobile: false
+    isMobile: false,
+    intro: true
 })
 
 export { state }

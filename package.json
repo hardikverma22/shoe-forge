@@ -13,6 +13,8 @@
     "@react-three/drei": "^9.66.1",
     "@react-three/fiber": "^8.13.0",
     "framer-motion": "^10.12.7",
+    "gsap": "^3.11.5",
+    "leva": "^0.9.34",
     "react": "^18.2.0",
     "react-color": "^2.19.3",
     "react-dom": "^18.2.0",

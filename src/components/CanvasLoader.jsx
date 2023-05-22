@@ -2,7 +2,7 @@ import { Html, useProgress } from "@react-three/drei";
 import { motion } from "framer-motion";
 
 const CanvasLoader = () => {
-  const { progress } = useProgress();
+  // const { progress } = useProgress();
 
   return (
     <Html
@@ -16,10 +16,10 @@ const CanvasLoader = () => {
       }}
     >
       <div className="flex flex-col gap-2 justify-center items-center w-full h-screen">
-        <p className="text-black text-lg font-bold">{progress.toFixed(2)}%</p>
+        {/* <p className="text-black text-2xl font-bold">{progress.toFixed(2)}%</p> */}
         <motion.div className="flex items-center">
           <motion.div
-            className="w-4 h-4 rounded-full mr-2 bg-primary"
+            className="w-4 h-4 rounded-full mr-2 bg-black"
             animate={{ y: 10 }}
             initial={{ y: 0 }}
             transition={{
@@ -30,7 +30,7 @@ const CanvasLoader = () => {
             }}
           />
           <motion.div
-            className="w-4 h-4 rounded-full mr-2 bg-secondary"
+            className="w-4 h-4 rounded-full mr-2 bg-black"
             animate={{ y: 10 }}
             initial={{ y: 0 }}
             transition={{
@@ -41,7 +41,7 @@ const CanvasLoader = () => {
             }}
           />
           <motion.div
-            className="w-4 h-4 rounded-full bg-tertiary"
+            className="w-4 h-4 rounded-full bg-black"
             animate={{ y: 10 }}
             initial={{ y: 0 }}
             transition={{

@@ -1,3 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lilita+One&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+@layer base {
+    html {
+        font-family: 'Libre Baskerville', serif;
+    }
+}
