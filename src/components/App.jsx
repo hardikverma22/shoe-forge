@@ -13,7 +13,6 @@ const App = () => {
 
   useEffect(() => {
     if (progress) setloaded(true);
-    console.log(progress);
   }, [progress]);
 
   useEffect(() => {

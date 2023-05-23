@@ -33,7 +33,7 @@ const MainCanvas = () => {
       <Suspense fallback={null}>
         <Shoe />
       </Suspense>
-      <ambientLight />
+      <ambientLight intensity={1} />
       {/* {!snap.intro ? <Env perfSucks={true} /> : null} */}
     </Canvas>
   );

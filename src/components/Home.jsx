@@ -13,20 +13,13 @@ const Home = () => {
 
   const featureRef = useRef();
 
-  useEffect(() => {
-    if (snap.intro) {
-      document.body.classList.add(
-        "bg-gradient-to-r",
-        "from-[#b2f0ff]",
-        // "via-[#d4a1ff]",
-        "to-yellow-200"
-      );
-    }
-  }, [snap.intro]);
-
   return (
-    <div className="relative">
-      <div className={`h-screen w-full ${snap.intro ? "fixed top-0 z-0" : ""}`}>
+    <div className="relative w-full">
+      <div
+        className={`lg:flex ${snap.intro ? "hidden" : ""}  h-screen w-full ${
+          snap.intro ? "fixed top-0 z-0" : ""
+        }`}
+      >
         <MainCanvas />
       </div>
 

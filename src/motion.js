@@ -1,5 +1,5 @@
 export const palet = {
-    hidden: { x: -30 },
+    hidden: { x: "100vw" },
     show: {
         x: 0,
     },
@@ -8,16 +8,16 @@ export const palet = {
     },
 };
 
-export const container = {
+export const container = (delayChildren = 2) => ({
     hidden: {},
     show: {
         transition: {
             staggerChildren: 0.2,
-            delayChildren: 2,
+            delayChildren: delayChildren,
             type: "tween",
         },
     },
-};
+});
 
 export const textContainer = (staggerChildren = 0.2, delayChildren = 0.5) => ({
     hidden: { opacity: 0 },

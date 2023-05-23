@@ -1,10 +1,10 @@
 import { motion } from "framer-motion";
-import { palet } from "../motion";
+import { fadeInY, palet } from "../motion";
 
 const Button = ({ meshColor, onClick, title, Icon }) => {
   return (
     <motion.button
-      variants={palet}
+      variants={fadeInY(0.5, -50)}
       transition={{
         duration: 0.5,
 

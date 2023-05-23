@@ -39,7 +39,7 @@ const Overlay = () => {
         className="flex justify-center items-end flex-col gap-4 h-full pr-10 overflow-hidden"
       >
         <motion.div
-          variants={container}
+          variants={container(0)}
           initial="hidden"
           animate="show"
           className="flex justify-center items-end gap-5 flex-col"
