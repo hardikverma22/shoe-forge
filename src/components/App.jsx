@@ -21,6 +21,7 @@ const App = () => {
 
     const handleMediaQueryChange = (event) => {
       state.isMobile = mediaQuery.matches;
+      console.log(state.isMobile);
     };
 
     mediaQuery.addEventListener("change", handleMediaQueryChange);

@@ -10,7 +10,6 @@ import { container } from "../motion";
 
 const Overlay = () => {
   const snapshot = useSnapshot(state);
-  console.log(snapshot.mesh.color);
 
   const [IsDrawerClosed, SetIsDrawerClosed] = useState(true);
 

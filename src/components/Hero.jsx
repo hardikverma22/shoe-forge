@@ -16,7 +16,7 @@ const Hero = forwardRef(({}, ref) => {
           variants={textContainer()}
           initial="hidden"
           animate="show"
-          className="lg:text-9xl text-5xl flex  overflow-hidden pb-3
+          className="lg:text-9xl md:text-7xl text-5xl flex  overflow-hidden pb-3
                     font-extrabold text-white
                     drop-shadow-[0_3.2px_3.2px_rgba(0,0,0,0.8)]"
         >
@@ -31,11 +31,13 @@ const Hero = forwardRef(({}, ref) => {
           variants={container()}
           initial="hidden"
           animate="show"
-          className="flex flex-col justify-center items-center lg:justify-start lg:items-start text-center lg:text-left"
+          className="flex flex-col justify-center items-center
+                     lg:justify-start lg:items-start
+                    text-center lg:text-left"
         >
           <motion.h2
             variants={fadeInY()}
-            className="lg:text-4xl lg:text-left text-2xl font-extrabold
+            className="lg:text-4xl md:text-3xl text-2xl lg:text-left font-extrabold
                       text-transparent bg-gradient-to-r from-yellow-500  to-yellow-900 bg-clip-text 
                       mt-8 tracking-wide"
           >
@@ -49,7 +51,7 @@ const Hero = forwardRef(({}, ref) => {
             unleash your creativity and design the perfect pair of shoes to suit
             your unique style.
           </motion.p>
-          <motion.div variants={fadeInY()} className="pt-5 z-50">
+          <motion.div variants={fadeInY()} className="md:pt-10 pt-5 z-50">
             <button
               className="bg-yellow-300 text-gray-600 font-bold rounded-md
                       px-4 py-2
@@ -62,6 +64,19 @@ const Hero = forwardRef(({}, ref) => {
           </motion.div>
           <motion.div variants={fadeInY()} className="lg:hidden flex pt-10 z-0">
             <motion.img
+              initial={{ y: 0 }}
+              animate={{ y: [-15, 0, 15] }}
+              transition={{
+                duration: 5,
+                repeat: Infinity,
+                ease: "linear",
+                repeatType: "reverse",
+              }}
+              src="static_shoe.png"
+              className="hidden md:block"
+            />
+
+            <motion.img
               initial={{ y: 0, scale: 2 }}
               animate={{ y: [-15, 0, 15] }}
               transition={{
@@ -71,6 +86,7 @@ const Hero = forwardRef(({}, ref) => {
                 repeatType: "reverse",
               }}
               src="static_shoe.png"
+              className="md:hidden block"
             />
           </motion.div>
         </motion.div>

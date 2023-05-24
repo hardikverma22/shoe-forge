@@ -31,14 +31,14 @@ const Features = ({ featureRef }) => {
             variants={fadeInY()}
             className="text-md text-gray-600
                       font-sans tracking-wider
-                      mt-2
+                      mt-5
                       font-semibold lg:leading-6 leading-5"
           >
             An intuitive and engaging 3D shoe configurator, allowing users to
             customize their footwear by choosing from a wide range of materials,
             colors, geometries, and decals.
           </motion.p>
-          <motion.div className="flex gap-5 lg:pt-5 pt-3 lg:flex-row flex-col">
+          <motion.div className="flex gap-5 md:gap-10 md:pt-10 pt-3 lg:flex-row flex-col">
             <motion.div
               variants={fadeInX(-50, 0.5)}
               className="flex lg:flex-col lg:justify-center justify-between items-center
@@ -112,7 +112,7 @@ const Features = ({ featureRef }) => {
           </motion.div>
           <motion.div
             variants={fadeInY(0.3, 50)}
-            className="flex gap-5 lg:pt-5 pt-3 lg:flex-row flex-col"
+            className="flex gap-5 md:gap-10 md:pt-10 pt-3 flex-col "
           >
             <div
               className="flex flex-1 lg:gap-10 gap-5 justify-start items-center
@@ -143,7 +143,7 @@ const Features = ({ featureRef }) => {
               </motion.div>
             </div>
             <div
-              className="flex gap-5 justify-start items-center
+              className="flex gap-5 md:gap-10 justify-start items-center
                          rounded-lg font-serif tracking-wide
                       w-full"
             >

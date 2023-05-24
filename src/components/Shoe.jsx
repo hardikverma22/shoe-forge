@@ -136,14 +136,11 @@ const Shoe = () => {
   // });
 
   useEffect(() => {
-    console.log(camera.position);
     camera.position.set(
       1.9178048557224552,
       -0.9446855085124252,
       4.519910820511158
     );
-
-    console.log(camera.position);
   }, [snap.intro]);
 
   useLayoutEffect(() => {
