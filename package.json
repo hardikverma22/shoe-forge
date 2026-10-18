@@ -15,7 +15,6 @@
     "assets:textures": "node scripts/fetch-textures.mjs"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "0.135.0",
     "@gsap/react": "2.1.2",
     "@react-three/drei": "10.7.9",
     "@react-three/fiber": "9.8.2",

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -9,63 +9,6 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 const MARKS = ["spark", "anvil", "wave", "monogram"];
-const PROMPTS = [
-  "Tokyo at night",
-  "Desert sunrise",
-  "Forest trail after rain",
-  "Pastel cafe",
-  "Brutalist concrete",
-];
-
-/** Types the example prompts one after another, like someone trying ideas. */
-function PromptDemo() {
-  const [text, setText] = useState(PROMPTS[0]!);
-  const box = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    let alive = true;
-    let visible = false;
-    const io = new IntersectionObserver(([e]) => {
-      visible = Boolean(e?.isIntersecting);
-    });
-    if (box.current) io.observe(box.current);
-    const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
-    (async () => {
-      let i = 0;
-      while (alive) {
-        await wait(1600);
-        if (!visible) continue;
-        const next = PROMPTS[(i + 1) % PROMPTS.length]!;
-        for (let n = PROMPTS[i % PROMPTS.length]!.length; n >= 0 && alive; n--) {
-          setText(PROMPTS[i % PROMPTS.length]!.slice(0, n));
-          await wait(22);
-        }
-        for (let n = 0; n <= next.length && alive; n++) {
-          setText(next.slice(0, n));
-          await wait(55);
-        }
-        i++;
-      }
-    })();
-    return () => {
-      alive = false;
-      io.disconnect();
-    };
-  }, []);
-
-  // Printed as a specimen (quoted prompt and caret), not as a form: it is a demonstration.
-  return (
-    <div ref={box} aria-hidden="true" className="flex flex-col gap-2">
-      <p className="display text-volt min-h-[1.1em] text-[clamp(2rem,3.4vw,3rem)]">
-        “{text}
-        <span className="bg-volt ml-1 inline-block h-[0.8em] w-[3px] translate-y-[0.08em] animate-[caret_1s_steps(1)_infinite]" />
-        ”
-      </p>
-      <p className="spec text-on-night-2">Prompt / Claude picks 8 colors and materials</p>
-    </div>
-  );
-}
 
 function Key({ children }: { children: React.ReactNode }) {
   return (
@@ -94,11 +37,6 @@ const ROWS = [
         ))}
       </ul>
     ),
-  },
-  {
-    title: "Describe a colorway",
-    body: "Write a few words and Claude picks a color and a material for every part, then names the pair.",
-    demo: <PromptDemo />,
   },
   {
     title: "Undo anything",

@@ -12,7 +12,7 @@ Anyone curious enough to open it: sneaker fans who want to make a pair their own
 
 ## Product Purpose
 
-Shoe Forge lets you design a sneaker in real-time 3D: pick any of its eight parts, give each one a real material and a color, add graphics or text on the surface, try curated or AI-generated colorways, and leave with a share link, a saved design, or an export (PNG, GLB). Success is a visitor who starts playing within seconds and leaves with a pair they made.
+Shoe Forge lets you design a sneaker in real-time 3D: pick any of its eight parts, give each one a real material and a color, add graphics or text on the surface, try curated colorways, and leave with a share link, a saved design, or an export (PNG, GLB). Success is a visitor who starts playing within seconds and leaves with a pair they made.
 
 ## Positioning
 
@@ -23,11 +23,10 @@ A configurator driven by a typed product schema and real PBR materials (leather,
 - Desktop and touch devices; the studio must work as a bottom sheet on phones.
 - The 3D model is `public/models/forge-runner.glb` (eight parts: upper, laces, toe cap, lining, sole, side stripes, heel band, tongue patch).
 - PBR texture sets live in `public/textures/<material>/` (CC0, ambientCG).
-- AI colorways go through `/api/colorway` (Claude); without an API key the app falls back to a local generator and says so.
 
 ## Capabilities and Constraints
 
-- Keep: part selection on the shoe, per-part material/color/finish, graphics (marks, upload, text) placed on the surface, curated + random + AI colorways, undo/redo, command palette, share link, local "My designs" gallery, PNG/GLB export, light/dark.
+- Keep: part selection on the shoe, per-part material/color/finish, graphics (marks, upload, text) placed on the surface, curated + random colorways, undo/redo, command palette, share link, local "My designs" gallery, PNG/GLB export, light/dark.
 - Removed at the user's request (2026-10-18): bag, sizes, mock checkout, and the embed SDK + docs page. Do not reintroduce price, cart or embed messaging.
 - Stack is fixed: Next.js 16 (App Router), React 19, R3F 9 + drei 10, three 0.186, GSAP 3.15 (+ @gsap/react), Motion 14, Lenis, Tailwind 4, Zustand + zundo.
 
