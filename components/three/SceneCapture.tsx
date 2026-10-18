@@ -16,15 +16,23 @@ export function SceneCapture() {
   const size = useThree((s) => s.size);
 
   useEffect(() => {
-    const capture = async ({ scale, transparent, background, view }: CaptureOptions): Promise<Blob> => {
+    const capture = async ({
+      scale,
+      transparent,
+      background,
+      view,
+    }: CaptureOptions): Promise<Blob> => {
       const prevRatio = gl.getPixelRatio();
       const prevClear = new THREE.Color();
       gl.getClearColor(prevClear);
       const prevAlpha = gl.getClearAlpha();
 
+      // The clone keeps the orbit target's orientation; only a requested view re-aims it.
       const cam = camera.clone();
-      if (view) cam.position.set(...view);
-      cam.lookAt(0, 0, 0);
+      if (view) {
+        cam.position.set(...view);
+        cam.lookAt(0, 0, 0);
+      }
       cam.aspect = size.width / size.height;
       cam.updateProjectionMatrix();
 
@@ -33,11 +41,20 @@ export function SceneCapture() {
       gl.setPixelRatio(ratio);
       gl.setSize(size.width, size.height, false);
       if (transparent) gl.setClearColor(0x000000, 0);
-      else gl.setClearColor(background ?? "#eef1f4", 1);
+      else
+        gl.setClearColor(
+          background ??
+            (getComputedStyle(document.documentElement).getPropertyValue("--paper").trim() ||
+              "#eceef8"),
+          1,
+        );
 
       gl.render(scene, cam);
       const blob = await new Promise<Blob>((resolve, reject) =>
-        gl.domElement.toBlob((b) => (b ? resolve(b) : reject(new Error("Could not create the image"))), "image/png"),
+        gl.domElement.toBlob(
+          (b) => (b ? resolve(b) : reject(new Error("Could not create the image"))),
+          "image/png",
+        ),
       );
 
       gl.setPixelRatio(prevRatio);

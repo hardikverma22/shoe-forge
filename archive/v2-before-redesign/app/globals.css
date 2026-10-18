@@ -1,0 +1,95 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Tokens. Day studio is the default; Night shift overrides below. */
+:root {
+  --paper: #eef1f4;
+  --surface: #ffffff;
+  --ink: #10162b;
+  --ink-muted: #5a6378;
+  --line: #d3d9e1;
+  --accent: #2b3cff;
+  --accent-ink: #ffffff;
+  --gum: #c08a55;
+  --danger: #d6332f;
+  color-scheme: light;
+}
+
+.dark {
+  --paper: #0d111c;
+  --surface: #161b29;
+  --ink: #e8ecf4;
+  --ink-muted: #8a93a8;
+  --line: #252c3d;
+  --accent: #7c88ff;
+  --accent-ink: #0d111c;
+  --gum: #d9a46f;
+  --danger: #ff6b66;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-gum: var(--gum);
+  --color-danger: var(--danger);
+  --font-display: var(--font-big-shoulders);
+  --font-sans: var(--font-instrument-sans);
+  --radius-control: 10px;
+  --radius-panel: 20px;
+}
+
+@layer base {
+  html {
+    background: var(--paper);
+  }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans), system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    /* cyclorama: a soft spotlight over a cool sweep */
+    background-image: radial-gradient(90% 70% at 70% 20%, color-mix(in oklab, var(--surface) 70%, transparent), transparent 70%);
+    background-attachment: fixed;
+    min-height: 100dvh;
+  }
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  dialog::backdrop {
+    background: color-mix(in oklab, var(--ink) 35%, transparent);
+  }
+}
+
+@utility glass {
+  background: color-mix(in oklab, var(--surface) 84%, transparent);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--line);
+}
+
+/* Split headline lines are masked; leave room for descenders. */
+.hero-title .line {
+  padding-bottom: 0.14em;
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -6,8 +6,9 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("select a part, change material and color, then undo", async ({ page }) => {
-  await page.getByRole("button", { name: "Laces" }).click();
-  await expect(page.getByRole("button", { name: "Laces" })).toHaveAttribute("aria-pressed", "true");
+  const laces = page.getByRole("navigation", { name: "Parts" }).getByRole("button", { name: /Laces/ });
+  await laces.click();
+  await expect(laces).toHaveAttribute("aria-current", "true");
 
   // Laces allow canvas and knit only, so leather is offered as disabled.
   const leather = page.getByRole("radio", { name: /Leather/ });
@@ -16,9 +17,9 @@ test("select a part, change material and color, then undo", async ({ page }) => 
   await page.getByRole("radio", { name: "Knit" }).click();
   await expect(page.getByRole("radio", { name: "Knit" })).toHaveAttribute("aria-checked", "true");
 
-  const before = await page.getByRole("button", { name: "Undo (Ctrl+Z)" }).isDisabled();
+  const before = await page.getByRole("button", { name: "Undo" }).isDisabled();
   expect(before).toBe(false);
-  await page.getByRole("button", { name: "Undo (Ctrl+Z)" }).click();
+  await page.getByRole("button", { name: "Undo" }).click();
   await expect(page.getByRole("radio", { name: "Canvas" })).toHaveAttribute("aria-checked", "true");
 });
 
@@ -34,14 +35,6 @@ test("PNG export downloads a file", async ({ page }) => {
   await page.getByRole("tab", { name: "Export" }).click();
   const [download] = await Promise.all([page.waitForEvent("download"), page.getByRole("button", { name: /Download PNG/ }).click()]);
   expect(download.suggestedFilename()).toMatch(/\.png$/);
-});
-
-test("adding to bag needs a size first", async ({ page }) => {
-  await page.getByRole("button", { name: "Add to bag" }).click();
-  await expect(page.getByText("Choose a size first.")).toBeVisible();
-  await page.getByRole("radio", { name: "42" }).click();
-  await page.getByRole("button", { name: "Add to bag" }).click();
-  await expect(page.getByRole("link", { name: /Bag, 1 item/ })).toBeVisible();
 });
 
 test("placing a mark on the upper adds it to the placed list", async ({ page }) => {

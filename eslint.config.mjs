@@ -15,6 +15,8 @@ const eslintConfig = defineConfig([
     // Vendored tooling and the embed bundle are not app code.
     ".claude/**",
     "public/**",
+    // Reference copy of the previous version; not app code.
+    "archive/**",
   ]),
 ]);
 

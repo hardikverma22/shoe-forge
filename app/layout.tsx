@@ -1,20 +1,20 @@
 import type { Metadata, Viewport } from "next";
-import { Big_Shoulders, Instrument_Sans } from "next/font/google";
+import { Archivo, Martian_Mono } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 
-const display = Big_Shoulders({
+const archivo = Archivo({
   subsets: ["latin"],
-  weight: ["700", "800", "900"],
-  variable: "--font-big-shoulders",
+  axes: ["wdth"],
+  variable: "--font-archivo",
   display: "swap",
 });
 
-const sans = Instrument_Sans({
+const martian = Martian_Mono({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-instrument-sans",
+  axes: ["wdth"],
+  variable: "--font-martian",
   display: "swap",
 });
 
@@ -24,22 +24,27 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: { default: "Shoe Forge: design your sneaker in 3D", template: "%s · Shoe Forge" },
   description:
-    "Design a sneaker in real-time 3D, see it on your floor in AR, and download a production tech pack.",
+    "Pick any part of a real 3D sneaker, give it real leather, suede, knit or patent, and make the pair nobody else has.",
   icons: { icon: "/favicon/favicon-32x32.png", apple: "/favicon/apple-touch-icon.png" },
 };
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#eef1f4" },
-    { media: "(prefers-color-scheme: dark)", color: "#0d111c" },
+    { media: "(prefers-color-scheme: light)", color: "#e6e7ea" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a12" },
   ],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${display.variable} ${sans.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${archivo.variable} ${martian.variable}`}>
       <body>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem
+          disableTransitionOnChange
+        >
           {children}
         </ThemeProvider>
         <Analytics />

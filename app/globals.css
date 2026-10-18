@@ -1,86 +1,289 @@
 @import "tailwindcss";
+/* The archived previous version is reference material, not part of this build. */
+@source not "../archive";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Tokens. Day studio is the default; Night shift overrides below. */
+/*
+ * Two layers of tokens.
+ * Stock: the printed tech-pack world. Fixed colors, used by the home page in every theme.
+ * Studio: the working surface. Light by default, dark under .dark.
+ */
 :root {
-  --paper: #eef1f4;
+  /* stock */
+  --cobalt: #1e2bff;
+  --cobalt-deep: #1520c9;
+  --volt: #d7ff3a;
+  --signal: #ff4a1c;
+  --night: #0a0a12;
+  --sheet: #ffffff;
+  --on-cobalt-2: #c9ccff;
+  --on-night-2: #a9acd2;
+  /* the photo sweep: a neutral studio backdrop so the shoe carries the color */
+  --sweep: #e6e7ea;
+  --sweep-hi: #f7f7f8;
+  --sweep-lo: #d6d8dd;
+  --on-sweep-2: #4f5263;
+
+  /* studio, light */
+  --paper: #e9eaee;
   --surface: #ffffff;
-  --ink: #10162b;
-  --ink-muted: #5a6378;
-  --line: #d3d9e1;
-  --accent: #2b3cff;
+  --surface-2: #f5f6fc;
+  --ink: #0a0a12;
+  --ink-muted: #4b4f6e;
+  --line: #d3d6ea;
+  --line-strong: #0a0a12;
+  --accent: #1e2bff;
   --accent-ink: #ffffff;
-  --gum: #c08a55;
-  --danger: #d6332f;
+  --select: #d7ff3a;
+  --select-ink: #0a0a12;
+  --danger: #d9321a;
+  --grid: color-mix(in oklab, #1e2bff 7%, transparent);
+  --studio-hi: #fbfbfc;
+  --studio-lo: #d9dbe0;
   color-scheme: light;
 }
 
 .dark {
-  --paper: #0d111c;
-  --surface: #161b29;
-  --ink: #e8ecf4;
-  --ink-muted: #8a93a8;
-  --line: #252c3d;
-  --accent: #7c88ff;
-  --accent-ink: #0d111c;
-  --gum: #d9a46f;
-  --danger: #ff6b66;
+  --paper: #080912;
+  --surface: #11132a;
+  --surface-2: #171a36;
+  --ink: #f1f2ff;
+  --ink-muted: #a3a7d4;
+  --line: #262a52;
+  --line-strong: #f1f2ff;
+  --accent: #7a84ff;
+  --accent-ink: #080912;
+  --select: #d7ff3a;
+  --select-ink: #0a0a12;
+  --danger: #ff6a4d;
+  --grid: color-mix(in oklab, #7a84ff 9%, transparent);
+  --studio-hi: #22243a;
+  --studio-lo: #05060c;
   color-scheme: dark;
 }
 
 @theme inline {
+  --color-cobalt: var(--cobalt);
+  --color-cobalt-deep: var(--cobalt-deep);
+  --color-volt: var(--volt);
+  --color-signal: var(--signal);
+  --color-night: var(--night);
+  --color-sheet: var(--sheet);
+  --color-on-cobalt-2: var(--on-cobalt-2);
+  --color-on-night-2: var(--on-night-2);
+  --color-sweep: var(--sweep);
+  --color-sweep-lo: var(--sweep-lo);
+  --color-on-sweep-2: var(--on-sweep-2);
+
   --color-paper: var(--paper);
   --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
   --color-ink: var(--ink);
   --color-ink-muted: var(--ink-muted);
   --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
   --color-accent: var(--accent);
   --color-accent-ink: var(--accent-ink);
-  --color-gum: var(--gum);
+  --color-select: var(--select);
+  --color-select-ink: var(--select-ink);
   --color-danger: var(--danger);
-  --font-display: var(--font-big-shoulders);
-  --font-sans: var(--font-instrument-sans);
-  --radius-control: 10px;
-  --radius-panel: 20px;
+
+  --font-sans: var(--font-archivo), system-ui, sans-serif;
+  --font-mono: var(--font-martian), ui-monospace, monospace;
+
+  --radius-control: 999px;
+  --radius-card: 14px;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
 }
 
 @layer base {
   html {
     background: var(--paper);
+    -webkit-text-size-adjust: 100%;
   }
   body {
     background: var(--paper);
     color: var(--ink);
-    font-family: var(--font-sans), system-ui, sans-serif;
+    font-family: var(--font-archivo), system-ui, sans-serif;
+    font-variation-settings: "wdth" 100;
     -webkit-font-smoothing: antialiased;
-    /* cyclorama: a soft spotlight over a cool sweep */
-    background-image: radial-gradient(90% 70% at 70% 20%, color-mix(in oklab, var(--surface) 70%, transparent), transparent 70%);
-    background-attachment: fixed;
+    -moz-osx-font-smoothing: grayscale;
     min-height: 100dvh;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background: var(--volt);
+    color: var(--night);
   }
   :focus-visible {
     outline: 2px solid var(--accent);
-    outline-offset: 2px;
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+  .stock :focus-visible {
+    outline-color: var(--volt);
+  }
+  a {
+    text-underline-offset: 0.22em;
+    text-decoration-thickness: 1px;
+  }
+  input,
+  textarea {
+    caret-color: var(--accent);
   }
   dialog::backdrop {
-    background: color-mix(in oklab, var(--ink) 35%, transparent);
+    background: color-mix(in oklab, var(--night) 55%, transparent);
+    backdrop-filter: blur(2px);
+  }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklab, var(--ink) 25%, transparent) transparent;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
   }
 }
 
-@utility glass {
-  background: color-mix(in oklab, var(--surface) 84%, transparent);
-  backdrop-filter: blur(16px);
-  border: 1px solid var(--line);
+/* Condensed display voice: Archivo at its narrowest width. */
+@utility display {
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-variation-settings: "wdth" 62;
+  font-weight: 850;
+  letter-spacing: -0.012em;
+  line-height: 0.88;
 }
 
-/* Split headline lines are masked; leave room for descenders. */
-.hero-title .line {
-  padding-bottom: 0.14em;
+@utility wide {
+  font-variation-settings: "wdth" 118;
+}
+
+/* Spec voice: numbers, HEX codes, part numbers, measurements. Never body copy. */
+@utility spec {
+  font-family: var(--font-martian), ui-monospace, monospace;
+  font-variation-settings: "wdth" 88;
+  font-size: 0.6875rem;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
 }
 
 @utility tabular {
   font-variant-numeric: tabular-nums;
+}
+
+/* A seamless photo sweep: lit from above-center, falling off toward the floor and edges. */
+@utility sweep {
+  background-color: var(--sweep);
+  background-image:
+    radial-gradient(70% 60% at var(--sweep-x, 62%) 42%, var(--sweep-hi) 0%, transparent 70%),
+    linear-gradient(
+      to bottom,
+      transparent 55%,
+      color-mix(in oklab, var(--sweep-lo) 70%, transparent) 100%
+    );
+}
+
+/* The studio's backdrop: the same photo sweep, following the theme. */
+@utility studio-sweep {
+  background-color: var(--paper);
+  background-image:
+    radial-gradient(65% 55% at 50% 40%, var(--studio-hi) 0%, transparent 72%),
+    linear-gradient(to bottom, transparent 58%, var(--studio-lo) 100%);
+}
+
+/* Faint drafting grid behind the studio canvas. */
+@utility drafting {
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 32px 32px;
+  background-position: center center;
+}
+
+@utility panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow:
+    0 1px 0 color-mix(in oklab, var(--ink) 4%, transparent),
+    0 18px 40px -24px color-mix(in oklab, var(--cobalt) 35%, transparent);
+}
+
+/* Material swatch: a baked grayscale relief multiplied over the swatch color. */
+.swatch-surface {
+  background-color: var(--swatch, #f4f4f2);
+  background-image: var(--relief);
+  background-size: var(--relief-size, 280px);
+  background-blend-mode: multiply;
+}
+/* Patent's swatch is a render of the real PBR material (gloss and reflection). Hard light keeps
+   the reflection bright even on black patent, and leaves the midtones at the picked color. */
+.swatch-surface[data-material="patent"] {
+  background-size: cover;
+  background-position: center;
+  background-blend-mode: hard-light;
+}
+
+/* Range input: a full-ink track that fills with the accent, and a round thumb. */
+.sf-range {
+  appearance: none;
+  height: 22px;
+  background: transparent;
+}
+.sf-range::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(to right, var(--accent) var(--pct, 50%), var(--line) var(--pct, 50%));
+}
+.sf-range::-moz-range-track {
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(to right, var(--accent) var(--pct, 50%), var(--line) var(--pct, 50%));
+}
+.sf-range::-webkit-slider-thumb {
+  appearance: none;
+  margin-top: -7px;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 2px solid var(--accent);
+  box-shadow: 0 2px 6px rgb(10 10 18 / 0.2);
+  transition: transform 150ms var(--ease-out-expo);
+}
+.sf-range::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 2px solid var(--accent);
+}
+.sf-range:active::-webkit-slider-thumb {
+  transform: scale(1.15);
+}
+.sf-range:focus-visible {
+  outline: none;
+}
+.sf-range:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+}
+
+/* Masked line reveals for split headlines. Leave room for descenders. */
+.split-line {
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -91,5 +294,33 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* Hero entrance, compositor-driven. */
+@keyframes hero-line {
+  from {
+    transform: translate3d(0, 108%, 0);
+  }
+}
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+  }
+}
+.hero-line {
+  animation: hero-line 1.15s var(--ease-out-expo) both;
+}
+.hero-rise {
+  animation: hero-rise 0.9s var(--ease-out-expo) 0.55s both;
+}
+.hero-rise + .hero-rise {
+  animation-delay: 0.65s;
+}
+
+@keyframes caret {
+  50% {
+    opacity: 0;
   }
 }

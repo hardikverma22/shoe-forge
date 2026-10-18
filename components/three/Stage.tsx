@@ -1,67 +1,148 @@
-/* eslint-disable react-hooks/immutability -- R3F: three.js objects are mutated imperatively, as the R3F docs describe. */
 "use client";
 
-import * as THREE from "three";
-import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
-import { useThree } from "@react-three/fiber";
-import { ContactShadows } from "@react-three/drei";
-import { useEffect, useMemo } from "react";
+import { ContactShadows, Environment, Lightformer } from "@react-three/drei";
 import type { StageId } from "@/lib/design/types";
 import { useSceneMeta } from "@/lib/three/scene-store";
 
 /**
- * Lighting presets. The environment is generated locally from three's RoomEnvironment,
- * so the studio never waits on a remote HDRI (works offline, and it can't block rendering).
+ * A product-photography light rig, built from softboxes (Lightformers) rendered into the
+ * environment map once. Lights are neutral so picked colors stay true; presets only change
+ * the balance and warmth. Nothing is fetched from the network.
  */
-const PRESET: Record<StageId, { envIntensity: number; key: string; keyIntensity: number; fill: string }> = {
-  studio: { envIntensity: 0.9, key: "#ffffff", keyIntensity: 1.1, fill: "#dfe7ff" },
-  daylight: { envIntensity: 1.0, key: "#fff4e0", keyIntensity: 1.3, fill: "#e6f3ff" },
-  sunset: { envIntensity: 0.8, key: "#ffb27a", keyIntensity: 1.2, fill: "#ffd9b3" },
-  night: { envIntensity: 0.45, key: "#9fb4ff", keyIntensity: 0.9, fill: "#5f73c9" },
+type Rig = {
+  /** Overall environment strength. */
+  env: number;
+  /** Large overhead softbox. */
+  top: number;
+  /** Long strip lights on both sides (these draw the highlights that show finish). */
+  strips: number;
+  /** Rim light behind the shoe. */
+  rim: number;
+  /** Low bounce from the front, lifts the shadows. */
+  bounce: number;
+  /** Warmth of the key light. */
+  key: string;
+  /** Directional key for definition. */
+  keyIntensity: number;
+  /** Color of the dark studio around the softboxes (seen only in reflections). */
+  room: string;
 };
 
-export function Stage({ stage }: { stage: StageId }) {
-  const gl = useThree((s) => s.gl);
-  const scene = useThree((s) => s.scene);
+const PRESET: Record<StageId, Rig> = {
+  studio: {
+    env: 1,
+    top: 2.2,
+    strips: 3,
+    rim: 2,
+    bounce: 0.6,
+    key: "#ffffff",
+    keyIntensity: 0.9,
+    room: "#2b2b2e",
+  },
+  daylight: {
+    env: 1.1,
+    top: 3,
+    strips: 2,
+    rim: 1.2,
+    bounce: 0.9,
+    key: "#fff6ea",
+    keyIntensity: 1.1,
+    room: "#4a5058",
+  },
+  sunset: {
+    env: 0.95,
+    top: 1.4,
+    strips: 2.6,
+    rim: 3,
+    bounce: 0.5,
+    key: "#ffd2a8",
+    keyIntensity: 1,
+    room: "#3a2a24",
+  },
+  night: {
+    env: 0.7,
+    top: 0.9,
+    strips: 3.4,
+    rim: 3.2,
+    bounce: 0.25,
+    key: "#dfe6ff",
+    keyIntensity: 0.6,
+    room: "#121318",
+  },
+};
+
+export function Stage({ stage, shadows = true }: { stage: StageId; shadows?: boolean }) {
   const layout = useSceneMeta((s) => s.layout);
   const cfg = PRESET[stage];
   const floorY = layout?.floorY ?? -0.4;
 
-  const envMap = useMemo(() => {
-    const pmrem = new THREE.PMREMGenerator(gl);
-    const tex = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-    pmrem.dispose();
-    return tex;
-  }, [gl]);
-
-  useEffect(() => {
-    scene.environment = envMap;
-    return () => {
-      scene.environment = null;
-    };
-  }, [scene, envMap]);
-
-  useEffect(() => () => envMap.dispose(), [envMap]);
-
-  useEffect(() => {
-    scene.environmentIntensity = cfg.envIntensity;
-  }, [scene, cfg.envIntensity]);
-
   return (
     <>
-      <directionalLight position={[2.5, 4, 2]} intensity={cfg.keyIntensity} color={cfg.key} />
-      <directionalLight position={[-3, 1.5, -2]} intensity={0.45} color={cfg.fill} />
-      <ambientLight intensity={0.2} />
-      <ContactShadows
-        key={stage}
-        position={[0, floorY - 0.001, 0]}
-        opacity={0.5}
-        scale={3}
-        blur={2.2}
-        far={1.2}
-        resolution={512}
-        frames={1}
-      />
+      <Environment key={`env-${stage}`} resolution={256} frames={1} environmentIntensity={cfg.env}>
+        <color attach="background" args={[cfg.room]} />
+        <Lightformer
+          form="rect"
+          intensity={cfg.top}
+          color={cfg.key}
+          position={[0, 5, 0.5]}
+          rotation-x={Math.PI / 2}
+          scale={[6, 4, 1]}
+        />
+        <Lightformer
+          form="rect"
+          intensity={cfg.strips}
+          position={[-4.5, 1.2, 1.5]}
+          rotation-y={Math.PI / 2.4}
+          scale={[0.6, 6, 1]}
+        />
+        <Lightformer
+          form="rect"
+          intensity={cfg.strips * 0.8}
+          position={[4.5, 1.2, -1]}
+          rotation-y={-Math.PI / 2.2}
+          scale={[0.6, 6, 1]}
+        />
+        <Lightformer
+          form="rect"
+          intensity={cfg.strips * 0.6}
+          position={[0, 1.4, 5]}
+          scale={[5, 0.4, 1]}
+        />
+        <Lightformer form="ring" intensity={cfg.rim} position={[-1, 2, -5]} scale={3} />
+        <Lightformer
+          form="rect"
+          intensity={cfg.bounce}
+          position={[0, -2.5, 3]}
+          rotation-x={-Math.PI / 3}
+          scale={[8, 2, 1]}
+        />
+      </Environment>
+      <directionalLight position={[2.5, 4, 3]} intensity={cfg.keyIntensity} color={cfg.key} />
+      {shadows ? (
+        <group key={`shadow-${stage}`}>
+          {/* A tight contact shadow where the sole meets the floor, plus a wide, faint one. */}
+          <ContactShadows
+            position={[0, floorY - 0.001, 0]}
+            opacity={0.75}
+            scale={2.6}
+            blur={1.4}
+            far={0.18}
+            resolution={1024}
+            frames={1}
+            color="#0b0c12"
+          />
+          <ContactShadows
+            position={[0, floorY - 0.002, 0]}
+            opacity={0.25}
+            scale={3.6}
+            blur={3.2}
+            far={0.9}
+            resolution={512}
+            frames={1}
+            color="#0b0c12"
+          />
+        </group>
+      ) : null}
     </>
   );
 }

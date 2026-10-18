@@ -74,8 +74,7 @@ export function applyMaterial(
   mat.roughness = cfg.roughness ?? preset.roughness;
   mat.metalness = 0;
   mat.sheen = cfg.sheen ?? preset.sheen;
-  mat.sheenRoughness = 0.6;
-  mat.sheenColor.set("#ffffff");
+  mat.sheenRoughness = preset.sheenRoughness;
   mat.clearcoat = preset.clearcoat;
   mat.clearcoatRoughness = preset.clearcoatRoughness;
   mat.needsUpdate = true;

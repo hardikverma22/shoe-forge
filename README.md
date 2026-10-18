@@ -1,6 +1,6 @@
 # Shoe Forge
 
-A product configurator for footwear brands. Shoppers design a sneaker in real-time 3D, choose materials and colors per part, add graphics, get AI-generated colorways, and export a picture, a 3D model, or a share link. Brands embed it with one script tag.
+Design a sneaker part by part in real-time 3D. Click any of the eight parts, give it a real material (leather, suede, knit, mesh, canvas, rubber, patent) and a color, add graphics or text on the surface, try curated or AI-generated colorways, and leave with a share link, a saved design, a PNG or the 3D model.
 
 Built with Next.js 16, React 19, three.js with React Three Fiber and drei, GSAP (ScrollTrigger and SplitText), Motion, Tailwind CSS 4, Zustand with zundo for undo/redo, and the Anthropic SDK for colorways.
 
@@ -27,6 +27,7 @@ Copy `.env.example` to `.env.local` to turn on AI colorways. Without `ANTHROPIC_
 | `npm run test:e2e` | End-to-end and accessibility tests (Playwright, Chromium) |
 | `npm run assets:model` | Rebuilds `public/models/forge-runner.glb` from the source glTF |
 | `npm run assets:textures` | Re-downloads the CC0 PBR texture sets from ambientCG |
+| `node scripts/bake-swatches.mjs` | Bakes the lit material swatches used on the home page and in the studio |
 
 ## Structure
 
@@ -35,23 +36,10 @@ Copy `.env.example` to `.env.local` to turn on AI colorways. Without `ANTHROPIC_
 - `lib/design/` design types, rules, the zustand store with undo, pricing, the URL codec, colorways, saved designs.
 - `components/three/` the 3D viewport: model, stage, camera, graphics decals, capture.
 - `components/studio/` the studio UI: toolbar, panels, command menu, shortcuts.
-- `components/landing/` the landing page, including the pinned exploded-view scroll section.
+- `components/landing/` the home page: one fixed 3D canvas driven by the page's scroll (`lib/three/landing-rig.ts`), live part callouts, the exploded bill of materials, the swatch book and the colorway section.
 - `app/api/colorway` Claude-backed colorway route. `app/api/og` share image.
-- `public/embed.js` the embed SDK. `app/embed/[productId]` is the iframe it loads.
 - `scripts/` asset pipeline.
-- `docs/DECISIONS.md` records each departure from the plan, with the reason.
-
-## Embed
-
-```html
-<div id="configurator"></div>
-<script src="https://YOUR-SITE/embed.js"></script>
-<script>
-  ShoeForge.mount(document.getElementById("configurator"), { product: "forge-runner" });
-</script>
-```
-
-Full reference at `/docs`.
+- `docs/DECISIONS.md` records each departure from the plan, with the reason. `PRODUCT.md` holds the product facts the design follows.
 
 ## Credits
 

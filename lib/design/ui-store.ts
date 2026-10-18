@@ -18,6 +18,8 @@ type UIState = {
   placing: PlacingState | null;
   selectedGraphic: string | null;
   cameraNonce: number;
+  /** Bumped to fly the camera to the selected part (list picks do, clicks on the shoe don't). */
+  focusNonce: number;
   /** True while a graphic is being dragged. Orbit controls pause. */
   dragging: boolean;
   set: (patch: Partial<Omit<UIState, "set">>) => void;
@@ -32,6 +34,7 @@ export const useStudioUI = create<UIState>((set) => ({
   placing: null,
   selectedGraphic: null,
   cameraNonce: 0,
+  focusNonce: 0,
   dragging: false,
   set: (patch) => set(patch),
 }));

@@ -1,25 +1,31 @@
+import Link from "next/link";
+import { Logo } from "./Logo";
+
 export function SiteFooter() {
   return (
-    <footer className="mx-auto mt-24 max-w-7xl border-t border-line px-5 py-10 text-sm text-ink-muted md:px-10">
-      <div className="flex flex-col justify-between gap-6 md:flex-row">
-        <div className="space-y-2">
-          <p className="font-display text-xl font-extrabold text-ink">ShoeForge</p>
-          <p className="max-w-md">
-            Built by Hardik Verma. The 3D model and textures are credited in the{" "}
-            <a className="underline underline-offset-4 hover:text-accent" href="/docs#credits">
-              credits
-            </a>
-            .
+    <footer className="stock bg-night text-sheet relative z-10">
+      <div className="mx-auto grid max-w-[92rem] gap-10 px-5 py-14 md:grid-cols-[1.2fr_1fr_1fr] md:px-10">
+        <div className="space-y-4">
+          <Logo />
+          <p className="text-on-night-2 max-w-sm text-sm">
+            A sneaker you design part by part, in real-time 3D. Built by Hardik Verma.
           </p>
         </div>
-        <div className="flex gap-6">
-          <a className="underline underline-offset-4 hover:text-accent" href="https://github.com/hardikverma22/shoe-forge">
-            GitHub
+        <nav aria-label="Footer" className="flex flex-col gap-2 text-sm font-semibold">
+          <Link className="hover:text-volt w-fit" href="/studio/forge-runner">
+            Studio
+          </Link>
+          <Link className="hover:text-volt w-fit" href="/gallery">
+            My designs
+          </Link>
+          <a className="hover:text-volt w-fit" href="https://github.com/hardikverma22/shoe-forge">
+            Source on GitHub
           </a>
-          <a className="underline underline-offset-4 hover:text-accent" href="/docs">
-            Docs
-          </a>
-        </div>
+        </nav>
+        <p className="spec text-on-night-2 max-w-xs leading-relaxed">
+          Textures: ambientCG, CC0 1.0. Fonts: Archivo and Martian Mono, OFL. No real brand names or
+          marks are used.
+        </p>
       </div>
     </footer>
   );

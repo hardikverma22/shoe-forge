@@ -8,6 +8,7 @@ import { useStudioUI } from "@/lib/design/ui-store";
 import { generateColorway } from "@/lib/design/colorways";
 import { copyShareLink, exportPng, saveCurrent } from "@/lib/studio-actions";
 import { toast } from "@/lib/toast";
+import { pickPart } from "./PartRail";
 
 type Item = { id: string; group: string; label: string; run: () => void };
 
@@ -32,7 +33,12 @@ export function CommandMenu({
     const set = useStudioUI.getState().set;
     const list: Item[] = [];
     for (const p of product.parts) {
-      list.push({ id: `part-${p.id}`, group: "Parts", label: `Select ${p.label}`, run: close(() => set({ selectedPart: p.id })) });
+      list.push({
+        id: `part-${p.id}`,
+        group: "Parts",
+        label: `Select ${p.label}`,
+        run: close(() => pickPart(p.id)),
+      });
     }
     for (const c of product.colorways) {
       list.push({
@@ -86,11 +92,18 @@ export function CommandMenu({
         if (d) void saveCurrent(d);
       }),
     });
-    list.push({ id: "shortcuts", group: "Help", label: "Keyboard shortcuts", run: close(onShowShortcuts) });
+    list.push({
+      id: "shortcuts",
+      group: "Help",
+      label: "Keyboard shortcuts",
+      run: close(onShowShortcuts),
+    });
     return list;
   }, [product, onClose, onShowShortcuts]);
 
-  const filtered = items.filter((i) => `${i.group} ${i.label}`.toLowerCase().includes(query.trim().toLowerCase()));
+  const filtered = items.filter((i) =>
+    `${i.group} ${i.label}`.toLowerCase().includes(query.trim().toLowerCase()),
+  );
 
   return (
     <Dialog open={open} onClose={onClose} title="Command menu">
@@ -103,7 +116,7 @@ export function CommandMenu({
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Type a command"
-        className="mb-4 h-11 w-full rounded-[var(--radius-control)] border border-line bg-paper px-3 outline-none focus-visible:border-accent"
+        className="border-line bg-surface-2 focus-visible:border-accent mb-4 h-12 w-full rounded-full border px-5 text-base outline-none"
       />
       <ul className="space-y-1" role="listbox" aria-label="Commands">
         {filtered.map((i) => (
@@ -111,14 +124,16 @@ export function CommandMenu({
             <button
               type="button"
               onClick={i.run}
-              className="flex w-full items-center justify-between rounded-[var(--radius-control)] px-3 py-2.5 text-left text-sm hover:bg-ink/5 focus-visible:bg-ink/5"
+              className="hover:bg-ink/6 focus-visible:bg-ink/6 flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-2.5 text-left text-sm font-semibold"
             >
               <span>{i.label}</span>
-              <span className="text-xs text-ink-muted">{i.group}</span>
+              <span className="spec text-ink-muted">{i.group}</span>
             </button>
           </li>
         ))}
-        {filtered.length === 0 ? <li className="px-3 py-2 text-sm text-ink-muted">No matching commands.</li> : null}
+        {filtered.length === 0 ? (
+          <li className="text-ink-muted px-3 py-2 text-sm">No matching commands.</li>
+        ) : null}
       </ul>
     </Dialog>
   );
@@ -131,8 +146,8 @@ const SHORTCUTS: [string, string][] = [
   ["Ctrl/⌘ + S", "Save design"],
   ["[ and ]", "Previous and next part"],
   ["1 to 6", "Camera views"],
+  ["Space", "Turntable on and off"],
   ["R", "Surprise me"],
-  ["Space", "Auto-rotate on and off"],
   ["Delete", "Remove the selected graphic"],
   ["Esc", "Cancel placing and clear selection"],
   ["?", "This list"],
@@ -141,10 +156,10 @@ const SHORTCUTS: [string, string][] = [
 export function ShortcutsDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
   return (
     <Dialog open={open} onClose={onClose} title="Keyboard shortcuts">
-      <dl className="grid grid-cols-[auto,1fr] gap-x-6 gap-y-3 text-sm">
+      <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-3 text-sm">
         {SHORTCUTS.map(([keys, what]) => (
           <div key={keys} className="contents">
-            <dt className="tabular font-semibold">{keys}</dt>
+            <dt className="spec font-bold">{keys}</dt>
             <dd className="text-ink-muted">{what}</dd>
           </div>
         ))}

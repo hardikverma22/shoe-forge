@@ -6,20 +6,25 @@ import { Moon, Sun } from "lucide-react";
 
 const subscribe = () => () => {};
 
-export function ThemeToggle() {
+export function ThemeToggle({ className = "" }: { className?: string }) {
   const { resolvedTheme, setTheme } = useTheme();
   // Avoid a hydration mismatch: render a same-size placeholder until mounted.
-  const mounted = useSyncExternalStore(subscribe, () => true, () => false);
+  const mounted = useSyncExternalStore(
+    subscribe,
+    () => true,
+    () => false,
+  );
 
-  if (!mounted) return <span className="size-10" aria-hidden="true" />;
+  if (!mounted) return <span className={`size-10 ${className}`} aria-hidden="true" />;
 
   const dark = resolvedTheme === "dark";
   return (
     <button
       type="button"
       onClick={() => setTheme(dark ? "light" : "dark")}
-      aria-label={dark ? "Switch to day studio theme" : "Switch to night shift theme"}
-      className="grid size-10 place-items-center rounded-full border border-line bg-surface transition-colors hover:text-accent"
+      aria-label={dark ? "Switch to light theme" : "Switch to dark theme"}
+      title={dark ? "Light theme" : "Dark theme"}
+      className={`hover:bg-ink/5 grid size-10 place-items-center rounded-full transition-colors ${className}`}
     >
       {dark ? <Sun size={18} aria-hidden="true" /> : <Moon size={18} aria-hidden="true" />}
     </button>

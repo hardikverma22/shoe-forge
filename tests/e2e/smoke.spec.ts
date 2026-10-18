@@ -8,7 +8,7 @@ test("studio renders the 3D model and the side panel", async ({ page }) => {
   await expect(page.getByRole("status")).toHaveCount(0, { timeout: 30_000 });
   await expect(page.locator("canvas")).toBeVisible();
   await expect(page.getByRole("img", { name: /Forge Runner/ })).toBeVisible();
-  await expect(page.getByRole("tab", { name: "Design" })).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByRole("tab", { name: "Part" })).toHaveAttribute("aria-selected", "true");
   await page.screenshot({ path: "test-results/studio-desktop.png", fullPage: false });
   expect(errors).toEqual([]);
 });

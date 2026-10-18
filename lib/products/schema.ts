@@ -3,7 +3,15 @@ import { z } from "zod";
 export const Vec3 = z.tuple([z.number(), z.number(), z.number()]);
 export type Vec3 = z.infer<typeof Vec3>;
 
-export const MATERIAL_IDS = ["leather", "suede", "knit", "mesh", "canvas", "rubber", "patent"] as const;
+export const MATERIAL_IDS = [
+  "leather",
+  "suede",
+  "knit",
+  "mesh",
+  "canvas",
+  "rubber",
+  "patent",
+] as const;
 export const MaterialId = z.enum(MATERIAL_IDS);
 export type MaterialId = z.infer<typeof MaterialId>;
 
@@ -26,11 +34,18 @@ export const PartDef = z.object({
   allowedMaterials: z.array(MaterialId).min(1),
   default: PartConfig,
   description: z.string(),
+  /** Direction (model space) from the part's center to its most recognizable point; callouts point there. */
+  anchor: Vec3.optional(),
 });
 export type PartDef = z.infer<typeof PartDef>;
 
 export const Rule = z.discriminatedUnion("type", [
-  z.object({ type: z.literal("forbidMaterial"), part: z.string(), material: MaterialId, reason: z.string() }),
+  z.object({
+    type: z.literal("forbidMaterial"),
+    part: z.string(),
+    material: MaterialId,
+    reason: z.string(),
+  }),
   z.object({ type: z.literal("maxGraphics"), max: z.number().int().min(0) }),
 ]);
 export type Rule = z.infer<typeof Rule>;

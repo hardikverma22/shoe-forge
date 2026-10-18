@@ -17,7 +17,7 @@ export function CameraRig({ product, enabled = true }: { product: ProductDef; en
   const controls = useRef<OrbitControlsImpl>(null);
   const camera = useThree((s) => s.camera);
   const view = useStudioUI((s) => s.view);
-  const selected = useStudioUI((s) => s.selectedPart);
+  const focusNonce = useStudioUI((s) => s.focusNonce);
   const autoRotate = useStudioUI((s) => s.autoRotate);
   const nonce = useStudioUI((s) => s.cameraNonce);
   const layout = useSceneMeta((s) => s.layout);
@@ -30,8 +30,22 @@ export function CameraRig({ product, enabled = true }: { product: ProductDef; en
     const duration = reduce ? 0 : 0.9;
     gsap.killTweensOf(camera.position);
     gsap.killTweensOf(c.target);
-    gsap.to(camera.position, { x: position[0], y: position[1], z: position[2], duration, ease: "power3.inOut", onUpdate: () => c.update() });
-    gsap.to(c.target, { x: target[0], y: target[1], z: target[2], duration, ease: "power3.inOut", onUpdate: () => c.update() });
+    gsap.to(camera.position, {
+      x: position[0],
+      y: position[1],
+      z: position[2],
+      duration,
+      ease: "power3.inOut",
+      onUpdate: () => c.update(),
+    });
+    gsap.to(c.target, {
+      x: target[0],
+      y: target[1],
+      z: target[2],
+      duration,
+      ease: "power3.inOut",
+      onUpdate: () => c.update(),
+    });
   };
 
   useEffect(() => {
@@ -42,17 +56,29 @@ export function CameraRig({ product, enabled = true }: { product: ProductDef; en
   }, [view, nonce]);
 
   useEffect(() => {
-    if (!selected || !layout) return;
+    const selected = useStudioUI.getState().selectedPart;
+    if (!focusNonce || !selected || !layout) return;
     const c = layout.partCenters[selected];
     if (!c) return;
-    // Look at the part from the outside, along the direction from the model's center.
-    const dir = new THREE.Vector3(...c).normalize();
-    if (dir.lengthSq() === 0) dir.set(0, 0.3, 1);
-    const distance = 1.05;
-    const pos = new THREE.Vector3(...c).add(dir.multiplyScalar(distance)).add(new THREE.Vector3(0, 0.25, 0));
-    flyTo([pos.x, pos.y, pos.z], c);
+    // Swing toward the part's side, blended with the current angle so the move stays short,
+    // and stay far enough back that the whole shoe remains in frame.
+    const toPart = new THREE.Vector3(...c);
+    if (toPart.lengthSq() < 1e-4) toPart.set(0, 0.3, 1);
+    const current = camera.position
+      .clone()
+      .sub(controls.current?.target ?? new THREE.Vector3())
+      .normalize();
+    const dir = toPart
+      .normalize()
+      .multiplyScalar(0.55)
+      .add(current.multiplyScalar(0.45))
+      .normalize();
+    dir.y = Math.max(dir.y, 0.12);
+    const pos = dir.normalize().multiplyScalar(2.6);
+    // Keep the shoe centered; only bias the target a little toward the part.
+    flyTo([pos.x, pos.y, pos.z], [c[0] * 0.35, c[1] * 0.35, c[2] * 0.35]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selected, layout]);
+  }, [focusNonce, layout]);
 
   useEffect(() => {
     const c = controls.current;
@@ -73,8 +99,8 @@ export function CameraRig({ product, enabled = true }: { product: ProductDef; en
       enablePan={false}
       enableDamping
       dampingFactor={0.08}
-      minDistance={1.4}
-      maxDistance={4.5}
+      minDistance={1.3}
+      maxDistance={4.8}
       minPolarAngle={0.15}
       maxPolarAngle={Math.PI - 0.15}
       autoRotate={autoRotate}

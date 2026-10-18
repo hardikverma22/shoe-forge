@@ -11,7 +11,45 @@ import { useHistoryGesture } from "@/lib/design/gesture";
 import { toast } from "@/lib/toast";
 import { Button, Slider } from "@/components/ui/primitives";
 
-const MARKS = ["anvil", "spark", "wave", "monogram"] as const;
+/** Original marks only (no real brand logos); people can upload a logo they own. */
+const MARKS = [
+  "star",
+  "bolt",
+  "flame",
+  "heart",
+  "moon",
+  "crown",
+  "shield",
+  "leaf",
+  "sparkles",
+  "cloud",
+  "droplet",
+  "hexagon",
+  "snowflake",
+  "target",
+  "infinity",
+  "asterisk",
+  "mountain",
+  "wind",
+  "music",
+  "globe",
+  "anvil",
+  "spark",
+  "wave",
+  "monogram",
+] as const;
+export const MARK_COLORS = [
+  "#0A0A12",
+  "#F4F4F2",
+  "#FF4A1C",
+  "#D7FF3A",
+  "#1E2BFF",
+  "#C08A55",
+  "#D6332F",
+  "#3A7D44",
+  "#F2C14E",
+  "#E86FA1",
+];
 const MAX_UPLOAD_BYTES = 2 * 1024 * 1024;
 const ALLOWED_TYPES = ["image/png", "image/jpeg", "image/svg+xml"];
 
@@ -21,76 +59,126 @@ export function GraphicsPanel({ product, design }: { product: ProductDef; design
   const max = maxGraphics(product);
   const used = design.graphics.length;
   const full = used >= max;
+  const [markColor, setMarkColor] = useState(MARK_COLORS[0]!);
 
   const startPlacing = (p: NonNullable<typeof placing>) => {
     if (full) {
       toast.error(`You can add up to ${max} graphics`);
       return;
     }
-    useStudioUI.getState().set({ placing: p, selectedPart: null });
-    toast.info(`Click ${product.parts.filter((x) => product.graphicZones.includes(x.id)).map((x) => x.label).join(", ")} to place it`);
+    // The banner over the canvas explains where to click; no toast on top of it.
+    useStudioUI.getState().set({ placing: p });
   };
 
   return (
-    <div className="space-y-6">
-      <p className="text-sm text-ink-muted">
+    <div className="space-y-7">
+      <p className="text-ink-muted text-sm">
         {used} of {max} graphics used.{" "}
         {placing ? (
-          <button type="button" className="underline underline-offset-4" onClick={() => useStudioUI.getState().set({ placing: null })}>
+          <button
+            type="button"
+            className="underline underline-offset-4"
+            onClick={() => useStudioUI.getState().set({ placing: null })}
+          >
             Cancel placing
           </button>
         ) : null}
       </p>
 
-      <section aria-labelledby="marks-heading" className="space-y-2">
-        <h3 id="marks-heading" className="font-semibold">
-          Marks
-        </h3>
-        <div className="grid grid-cols-4 gap-2">
+      <section aria-labelledby="marks-heading" className="space-y-3">
+        <div className="flex items-baseline justify-between">
+          <h3 id="marks-heading" className="text-sm font-bold">
+            Marks
+          </h3>
+          <span className="text-ink-muted text-xs">Pick a color, then a mark</span>
+        </div>
+        <div role="radiogroup" aria-label="Mark color" className="flex flex-wrap gap-2">
+          {MARK_COLORS.map((hex) => (
+            <button
+              key={hex}
+              type="button"
+              role="radio"
+              aria-checked={markColor === hex}
+              aria-label={`Mark color ${hex}`}
+              onClick={() => setMarkColor(hex)}
+              className={`border-ink/15 size-7 cursor-pointer rounded-full border transition-transform hover:scale-110 ${
+                markColor === hex ? "ring-accent ring-offset-surface ring-2 ring-offset-2" : ""
+              }`}
+              style={{ background: hex }}
+            />
+          ))}
+        </div>
+        <div className="grid grid-cols-6 gap-1.5">
           {MARKS.map((m) => (
             <button
               key={m}
               type="button"
               aria-label={`Place the ${m} mark`}
+              title={m}
               disabled={full}
-              onClick={() => startPlacing({ kind: "mark", src: `/marks/${m}.png` })}
-              className="grid aspect-square place-items-center rounded-[var(--radius-control)] border border-line bg-ink/80 p-2 transition-transform hover:scale-105 disabled:opacity-40"
+              onClick={() =>
+                startPlacing({ kind: "mark", src: `/marks/${m}.png`, color: markColor })
+              }
+              className="border-line bg-surface-2 hover:border-line-strong grid aspect-square cursor-pointer place-items-center rounded-xl border p-2.5 transition-[transform,border-color] hover:scale-105 disabled:opacity-40"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={`/marks/${m}.png`} alt="" className="size-full object-contain" />
+              <span
+                aria-hidden="true"
+                className="size-full"
+                style={{
+                  background: markColor,
+                  WebkitMask: `url(/marks/${m}.png) center / contain no-repeat`,
+                  mask: `url(/marks/${m}.png) center / contain no-repeat`,
+                }}
+              />
             </button>
           ))}
         </div>
+        <p className="text-ink-muted text-xs">
+          Want your own logo? Upload it below. Only use logos you have the right to use.
+        </p>
       </section>
 
       <UploadSection onReady={(src) => startPlacing({ kind: "upload", src })} disabled={full} />
       <TextSection onReady={(p) => startPlacing(p)} disabled={full} palette={product.palette} />
 
       {design.graphics.length > 0 ? (
-        <section aria-labelledby="placed-heading" className="space-y-3 border-t border-line pt-5">
-          <h3 id="placed-heading" className="font-semibold">
+        <section aria-labelledby="placed-heading" className="border-line space-y-3 border-t pt-5">
+          <h3 id="placed-heading" className="text-sm font-bold">
             On the shoe
           </h3>
           <ul className="space-y-2">
             {design.graphics.map((g) => (
-              <PlacedGraphic key={g.id} graphic={g} label={product.parts.find((p) => p.id === g.partId)?.label ?? g.partId} selected={selectedGraphic === g.id} />
+              <PlacedGraphic
+                key={g.id}
+                graphic={g}
+                label={product.parts.find((p) => p.id === g.partId)?.label ?? g.partId}
+                selected={selectedGraphic === g.id}
+              />
             ))}
           </ul>
-          <p className="text-xs text-ink-muted">Drag a selected graphic along the shoe. Press Delete to remove it.</p>
+          <p className="text-ink-muted text-xs">
+            Drag a selected graphic along the shoe. Press Delete to remove it.
+          </p>
         </section>
       ) : null}
     </div>
   );
 }
 
-function UploadSection({ onReady, disabled }: { onReady: (src: string) => void; disabled: boolean }) {
+function UploadSection({
+  onReady,
+  disabled,
+}: {
+  onReady: (src: string) => void;
+  disabled: boolean;
+}) {
   const [error, setError] = useState<string | null>(null);
   return (
     <section aria-labelledby="upload-heading" className="space-y-2">
-      <h3 id="upload-heading" className="font-semibold">
+      <h3 id="upload-heading" className="text-sm font-bold">
         Upload
       </h3>
-      <label className="flex cursor-pointer flex-col gap-2 rounded-[var(--radius-control)] border border-dashed border-line p-4 text-sm hover:border-accent">
+      <label className="border-line hover:bg-ink/3 hover:border-accent flex cursor-pointer flex-col gap-2 rounded-xl border border-dashed p-4 text-sm">
         <span className="font-medium">Choose an image</span>
         <span className="text-ink-muted">PNG, JPG or SVG, up to 2 MB</span>
         <input
@@ -118,7 +206,7 @@ function UploadSection({ onReady, disabled }: { onReady: (src: string) => void; 
         />
       </label>
       {error ? (
-        <p role="alert" className="text-sm text-danger">
+        <p role="alert" className="text-danger text-sm">
           {error}
         </p>
       ) : null}
@@ -126,15 +214,23 @@ function UploadSection({ onReady, disabled }: { onReady: (src: string) => void; 
   );
 }
 
-function TextSection({ onReady, disabled, palette }: { onReady: (p: { kind: "text"; src: string; text: string; font: string; color: string }) => void; disabled: boolean; palette: string[] }) {
+function TextSection({
+  onReady,
+  disabled,
+  palette,
+}: {
+  onReady: (p: { kind: "text"; src: string; text: string; font: string; color: string }) => void;
+  disabled: boolean;
+  palette: string[];
+}) {
   const [text, setText] = useState("");
   const [font, setFont] = useState<"display" | "sans">("display");
-  const [color, setColor] = useState(palette[2] ?? "#2B3CFF");
+  const [color, setColor] = useState(palette[1] ?? "#1B1B1F");
   const [busy, setBusy] = useState(false);
 
   return (
     <section aria-labelledby="text-heading" className="space-y-3">
-      <h3 id="text-heading" className="font-semibold">
+      <h3 id="text-heading" className="text-sm font-bold">
         Text
       </h3>
       <div className="flex gap-2">
@@ -147,16 +243,16 @@ function TextSection({ onReady, disabled, palette }: { onReady: (p: { kind: "tex
           maxLength={12}
           onChange={(e) => setText(e.target.value)}
           placeholder="Up to 12 letters"
-          className="h-10 min-w-0 flex-1 rounded-[var(--radius-control)] border border-line bg-paper px-3 text-sm outline-none focus-visible:border-accent"
+          className="border-line bg-surface-2 focus-visible:border-accent h-10 min-w-0 flex-1 rounded-full border px-4 text-sm outline-none"
         />
         <select
           aria-label="Font"
           value={font}
           onChange={(e) => setFont(e.target.value as "display" | "sans")}
-          className="h-10 rounded-[var(--radius-control)] border border-line bg-paper px-2 text-sm"
+          className="border-line bg-surface-2 h-10 rounded-full border px-3 text-sm"
         >
-          <option value="display">Display</option>
-          <option value="sans">Sans</option>
+          <option value="display">Condensed</option>
+          <option value="sans">Regular</option>
         </select>
       </div>
       <div role="radiogroup" aria-label="Text color" className="flex flex-wrap gap-2">
@@ -168,7 +264,7 @@ function TextSection({ onReady, disabled, palette }: { onReady: (p: { kind: "tex
             aria-checked={color === hex}
             aria-label={`Text color ${hex}`}
             onClick={() => setColor(hex)}
-            className={`size-7 rounded-full border ${color === hex ? "ring-2 ring-accent ring-offset-2 ring-offset-surface" : "border-line"}`}
+            className={`size-7 rounded-full border ${color === hex ? "ring-accent ring-offset-surface ring-2 ring-offset-2" : "border-line"}`}
             style={{ background: hex }}
           />
         ))}
@@ -178,10 +274,16 @@ function TextSection({ onReady, disabled, palette }: { onReady: (p: { kind: "tex
         onClick={async () => {
           setBusy(true);
           try {
-            const { textToDataUrl } = await import("@/lib/graphics/text");
-            const family = getComputedStyle(document.documentElement).getPropertyValue(font === "display" ? "--font-big-shoulders" : "--font-instrument-sans").trim() || "sans-serif";
-            const src = await textToDataUrl(text.trim(), family, color);
-            onReady({ kind: "text", src, text: text.trim(), font: font === "display" ? "display" : "sans", color });
+            const { textToDataUrl: draw, fontFor } = await import("@/lib/graphics/text");
+            const f = fontFor(font);
+            const src = await draw(text.trim(), f.family, color, f.condensed);
+            onReady({
+              kind: "text",
+              src,
+              text: text.trim(),
+              font: font === "display" ? "display" : "sans",
+              color,
+            });
           } catch {
             toast.error("Couldn't draw that text. Try again.");
           } finally {
@@ -195,24 +297,45 @@ function TextSection({ onReady, disabled, palette }: { onReady: (p: { kind: "tex
   );
 }
 
-function PlacedGraphic({ graphic, label, selected }: { graphic: Graphic; label: string; selected: boolean }) {
-  const scale = useHistoryGesture<number>((v) => useDesignStore.getState().updateGraphic(graphic.id, { scale: v }));
-  const rot = useHistoryGesture<number>((v) => useDesignStore.getState().updateGraphic(graphic.id, { rotation: v }));
+function PlacedGraphic({
+  graphic,
+  label,
+  selected,
+}: {
+  graphic: Graphic;
+  label: string;
+  selected: boolean;
+}) {
+  const scale = useHistoryGesture<number>((v) =>
+    useDesignStore.getState().updateGraphic(graphic.id, { scale: v }),
+  );
+  const rot = useHistoryGesture<number>((v) =>
+    useDesignStore.getState().updateGraphic(graphic.id, { rotation: v }),
+  );
   return (
-    <li className={`rounded-[var(--radius-control)] border p-3 ${selected ? "border-accent" : "border-line"}`}>
+    <li className={`rounded-xl border p-3 ${selected ? "border-accent" : "border-line"}`}>
       <div className="flex items-center gap-3">
         <button
           type="button"
-          onClick={() => useStudioUI.getState().set({ selectedGraphic: graphic.id, selectedPart: graphic.partId })}
+          onClick={() =>
+            useStudioUI
+              .getState()
+              .set({ selectedGraphic: graphic.id, selectedPart: graphic.partId })
+          }
           aria-pressed={selected}
           className="flex min-w-0 flex-1 items-center gap-3 text-left"
         >
           {graphic.src ? (
             /* eslint-disable-next-line @next/next/no-img-element */
-            <img src={graphic.src} alt="" className="size-9 rounded bg-ink/80 object-contain p-1" />
+            <img src={graphic.src} alt="" className="bg-ink/80 size-9 rounded object-contain p-1" />
           ) : null}
           <span className="min-w-0 truncate text-sm font-medium">
-            {graphic.kind === "text" ? `“${graphic.text}”` : graphic.kind === "upload" ? "Uploaded image" : "Mark"} · {label}
+            {graphic.kind === "text"
+              ? `“${graphic.text}”`
+              : graphic.kind === "upload"
+                ? "Uploaded image"
+                : "Mark"}{" "}
+            · {label}
           </span>
         </button>
         <button
@@ -222,18 +345,40 @@ function PlacedGraphic({ graphic, label, selected }: { graphic: Graphic; label: 
             useDesignStore.getState().removeGraphic(graphic.id);
             useStudioUI.getState().set({ selectedGraphic: null });
           }}
-          className="grid size-8 place-items-center rounded-full text-ink-muted hover:text-danger"
+          className="text-ink-muted hover:text-danger grid size-8 place-items-center rounded-full"
         >
           <Trash2 size={16} aria-hidden="true" />
         </button>
       </div>
       {selected ? (
         <div className="mt-3 space-y-3">
+          {graphic.kind === "mark" ? (
+            <div role="radiogroup" aria-label="Mark color" className="flex flex-wrap gap-1.5">
+              {MARK_COLORS.map((hex) => (
+                <button
+                  key={hex}
+                  type="button"
+                  role="radio"
+                  aria-checked={(graphic.color ?? "#0A0A12").toUpperCase() === hex}
+                  aria-label={`Mark color ${hex}`}
+                  onClick={() =>
+                    useDesignStore.getState().updateGraphic(graphic.id, { color: hex })
+                  }
+                  className={`border-ink/15 size-6 cursor-pointer rounded-full border ${
+                    (graphic.color ?? "#0A0A12").toUpperCase() === hex
+                      ? "ring-accent ring-offset-surface ring-2 ring-offset-1"
+                      : ""
+                  }`}
+                  style={{ background: hex }}
+                />
+              ))}
+            </div>
+          ) : null}
           <Slider
             label="Size"
             value={graphic.scale}
-            min={0.03}
-            max={0.3}
+            min={0.05}
+            max={0.5}
             step={0.005}
             format={(v) => `${Math.round(v * 1000)}`}
             onStart={(v) => scale.onStart(v)}

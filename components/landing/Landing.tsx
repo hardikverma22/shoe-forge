@@ -1,217 +1,318 @@
 "use client";
 
-import Link from "next/link";
 import dynamic from "next/dynamic";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { SplitText } from "gsap/SplitText";
-import { motion } from "motion/react";
-import { Check, Copy } from "lucide-react";
+import Lenis from "lenis";
+import "lenis/dist/lenis.css";
 import { forgeRunner } from "@/lib/products/forge-runner";
-import { MATERIAL_LIST } from "@/lib/materials/presets";
-import { toast } from "@/lib/toast";
-import { SiteHeader } from "@/components/site/SiteHeader";
+import { useLanding } from "@/lib/design/landing-store";
+import { useStudioUI } from "@/lib/design/ui-store";
+import { useSceneMeta } from "@/lib/three/scene-store";
+import { rig, setPose, type Pose } from "@/lib/three/landing-rig";
 import { SiteFooter } from "@/components/site/SiteFooter";
+import { Callouts } from "./Callouts";
+import { Hero } from "./Hero";
+import { Tour, BUILD_STATES, BUILD_YAW, buildAt } from "./Tour";
+import { BUILD_STEPS } from "@/lib/design/landing-store";
+import { Materials } from "./Materials";
+import { Colorways, colorwayAt, COLORWAY_COUNT } from "./Colorways";
+import { Capabilities } from "./Capabilities";
+import { FinalCta } from "./FinalCta";
 
-gsap.registerPlugin(ScrollTrigger, SplitText, useGSAP);
+gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 const LandingScene = dynamic(() => import("./LandingScene"), { ssr: false, loading: () => null });
 
-const SNIPPET = `<div id="configurator"></div>
-<script src="https://YOUR-SITE/embed.js"></script>
-<script>
-  ShoeForge.mount(document.getElementById("configurator"), { product: "forge-runner" });
-</script>`;
+const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
+const OFFSCREEN: Partial<Pose> = { cy: -0.8, callouts: 0, spin: 0 };
 
-const CAPABILITIES = [
-  { title: "Any shoe, one config file", body: "Add a product with a GLB model and one typed config. Parts, materials, rules and price live in one place." },
-  { title: "Rules your factory can live with", body: "Forbid materials per part and cap graphics. Blocked options explain themselves instead of failing at checkout." },
-  { title: "A tech pack with every order", body: "Part, material, HEX and price for every piece, ready for a production floor." },
-  { title: "Events for your analytics", body: "Every change, share and add-to-bag is an event. Subscribe in one line." },
-];
+/** Where a section's shoe slot sits on screen, as a pose. */
+function slotPose(slot: Element | null): Partial<Pose> | null {
+  if (!slot) return null;
+  const r = slot.getBoundingClientRect();
+  const W = window.innerWidth;
+  const H = window.innerHeight;
+  if (r.width === 0) return null;
+  return {
+    cx: (r.left + r.width / 2) / W,
+    cy: (r.top + r.height / 2) / H,
+    // Fit the shoe's length to the slot's width, but never taller than the slot (a side view is about 2:1).
+    size: Math.min(r.width * 0.84, r.height * 1.55) / Math.min(W, H * 1.6),
+  };
+}
 
 export function Landing() {
   const root = useRef<HTMLDivElement>(null);
-  const pin = useRef<HTMLDivElement>(null);
-  const explode = useRef(0);
+  const lenis = useRef<Lenis | null>(null);
   const [reduced, setReduced] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [labelsOn, setLabelsOn] = useState(false);
+  const ready = useSceneMeta((s) => s.layout !== null);
 
   useEffect(() => {
-    queueMicrotask(() => setReduced(window.matchMedia("(prefers-reduced-motion: reduce)").matches));
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const apply = () => {
+      setReduced(mq.matches);
+      rig.instant = mq.matches;
+    };
+    apply();
+    mq.addEventListener("change", apply);
+    useStudioUI.getState().set({ selectedPart: null, hoveredPart: null });
+    return () => mq.removeEventListener("change", apply);
   }, []);
 
+  /** Reads which section owns the viewport and points the 3D rig at its slot. */
+  const choreograph = useCallback(() => {
+    const el = root.current;
+    if (!el) return;
+    const H = window.innerHeight;
+    let active: HTMLElement | null = null;
+    for (const s of el.querySelectorAll<HTMLElement>("[data-scene]")) {
+      const r = s.getBoundingClientRect();
+      if (r.top <= H * 0.5 && r.bottom > H * 0.5) {
+        active = s;
+        break;
+      }
+    }
+    if (!active) return;
+    const r = active.getBoundingClientRect();
+    const sticky = active.dataset.sticky === "true";
+    const p = sticky
+      ? clamp01(-r.top / Math.max(1, r.height - H))
+      : clamp01(-r.top / Math.max(1, r.height));
+    const base = slotPose(active.querySelector("[data-slot]")) ?? {};
+    const landing = useLanding.getState();
+    let showing = "hero";
+
+    rig.compact = false;
+    rig.interactive = false;
+    rig.only = null;
+    let tourPart: string | null = null;
+    rig.lineColor = active.dataset.scene === "tour" ? "#ffffff" : "#0a0a12";
+    switch (active.dataset.scene) {
+      case "hero":
+        setPose({ ...base, yaw: -0.5, explode: 0, spin: 0, callouts: p < 0.55 ? 1 : 0 });
+        rig.interactive = p < 0.5;
+        break;
+      case "tour": {
+        // The pair is built one part at a time; the callout points at the part just made.
+        const state = sticky ? buildAt(p) : landing.tourIndex;
+        const part = state > 0 ? BUILD_STEPS[state - 1]!.part : null;
+        landing.setTour(state, part);
+        tourPart = part;
+        showing = `build:${state}`;
+        setPose({
+          ...base,
+          yaw: BUILD_YAW[state] ?? -0.45,
+          explode: 0,
+          spin: 0,
+          callouts: part ? 1 : 0,
+        });
+        rig.only = part;
+        rig.compact = false;
+        break;
+      }
+      case "colorways": {
+        const index = sticky ? colorwayAt(p) : landing.colorwayIndex;
+        landing.setColorwayIndex(index);
+        showing = forgeRunner.colorways[index]?.id ?? "hero";
+        setPose({ ...base, yaw: -0.45, explode: 0, spin: reduced ? 0 : 0.35, callouts: 0 });
+        break;
+      }
+      case "final":
+        // The visitor's own pair returns with its part numbers: the colors picked up top come along.
+        setPose({ ...base, yaw: -0.55, explode: 0, spin: 0, callouts: p < 0.6 ? 1 : 0 });
+        rig.compact = true;
+        break;
+      default:
+        setPose(OFFSCREEN);
+    }
+    landing.setShowing(showing);
+    if (!tourPart) landing.setTour(landing.tourIndex, null);
+  }, [reduced]);
+
+  // Smooth scrolling, wired into GSAP's ticker so ScrollTrigger and the rig share one clock.
+  useEffect(() => {
+    let last = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      if (y !== last) rig.direction = y > last ? 1 : -1;
+      last = y;
+      choreograph();
+    };
+    let tick: ((time: number) => void) | null = null;
+    if (!reduced) {
+      const l = new Lenis({ autoRaf: false, lerp: 0.11, wheelMultiplier: 0.95 });
+      lenis.current = l;
+      l.on("scroll", ScrollTrigger.update);
+      tick = (time: number) => l.raf(time * 1000);
+      gsap.ticker.add(tick);
+      gsap.ticker.lagSmoothing(0);
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", choreograph);
+    choreograph();
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", choreograph);
+      if (tick) gsap.ticker.remove(tick);
+      lenis.current?.destroy();
+      lenis.current = null;
+    };
+  }, [reduced, choreograph]);
+
+  // Fonts and the model change layout once; re-measure when they land.
+  useEffect(() => {
+    if (!ready) return;
+    choreograph();
+    ScrollTrigger.refresh();
+  }, [ready, choreograph]);
+
+  // The hero darkens into the night of the tour as it scrolls away.
   useGSAP(
     () => {
-      const mm = gsap.matchMedia();
-
-      // Hero: each headline line rises out of a mask once.
-      const split = SplitText.create(".hero-title", { type: "lines", mask: "lines", linesClass: "line" });
-      gsap.from(split.lines, { yPercent: 110, duration: 1.1, ease: "power4.out", stagger: 0.08, delay: 0.1 });
-      gsap.from(".hero-sub, .hero-cta", { opacity: 0, y: 14, duration: 0.8, ease: "power3.out", stagger: 0.1, delay: 0.6 });
-
-      mm.add("(prefers-reduced-motion: no-preference)", () => {
-        // Pinned section: scrolling explodes the shoe into its parts, then reassembles it.
-        ScrollTrigger.create({
-          trigger: pin.current,
-          start: "top top",
-          end: "bottom bottom",
-          pin: ".pin-stage",
-          scrub: 0.6,
-          onUpdate: (self) => {
-            const p = self.progress;
-            // hold assembled, explode, hold exploded, reassemble
-            explode.current = p < 0.15 ? 0 : p < 0.55 ? (p - 0.15) / 0.4 : p < 0.8 ? 1 : Math.max(0, 1 - (p - 0.8) / 0.2);
-            setLabelsOn(explode.current > 0.6);
-          },
-        });
-        return () => undefined;
+      if (reduced) return;
+      gsap.to(".hero-dusk", {
+        opacity: 1,
+        ease: "power1.in",
+        scrollTrigger: {
+          trigger: '[data-scene="hero"]',
+          start: "35% top",
+          end: "bottom top",
+          scrub: true,
+        },
       });
-
-      mm.add("(prefers-reduced-motion: reduce)", () => {
-        explode.current = 0.7;
-        setLabelsOn(true);
-      });
-
-      return () => split.revert();
     },
-    { scope: root },
+    { scope: root, dependencies: [reduced] },
+  );
+
+  // The shoe's entrance waits until the scene has compiled its shaders and uploaded its
+  // textures (the scene raises sf:scene-ready), so the first moving frames are smooth.
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      rig.intro = 1;
+      return;
+    }
+    rig.intro = 0;
+    rig.sceneReady = false;
+    let tween: gsap.core.Tween | null = null;
+    const start = () => {
+      tween = gsap.to(rig, { intro: 1, duration: 1.7, ease: "expo.out", delay: 0.05 });
+    };
+    window.addEventListener("sf:scene-ready", start, { once: true });
+    return () => {
+      window.removeEventListener("sf:scene-ready", start);
+      tween?.kill();
+    };
+  }, []);
+
+  // Drag to turn the shoe in the hero; the pointer also tilts it slightly.
+  useEffect(() => {
+    const el = root.current;
+    if (!el) return;
+    let start: { x: number; y: number; id: number } | null = null;
+    let lastX = 0;
+    const isControl = (t: EventTarget | null) =>
+      Boolean(
+        (t as HTMLElement | null)?.closest?.("a,button,input,textarea,select,[data-no-pick]"),
+      );
+    const nearShoe = (x: number, y: number) => {
+      const b = rig.bounds;
+      return x > b.left - 60 && x < b.right + 60 && y > b.top - 60 && y < b.bottom + 60;
+    };
+    const down = (e: PointerEvent) => {
+      if (!rig.interactive || isControl(e.target) || !nearShoe(e.clientX, e.clientY)) return;
+      start = { x: e.clientX, y: e.clientY, id: e.pointerId };
+      lastX = e.clientX;
+    };
+    const move = (e: PointerEvent) => {
+      rig.pointer.x = (e.clientX / window.innerWidth) * 2 - 1;
+      rig.pointer.y = (e.clientY / window.innerHeight) * 2 - 1;
+      if (!start || e.pointerId !== start.id) return;
+      const dx = e.clientX - start.x;
+      const dy = e.clientY - start.y;
+      if (!rig.dragging && Math.abs(dx) > 6 && Math.abs(dx) > Math.abs(dy)) {
+        rig.dragging = true;
+        useStudioUI.getState().set({ hoveredPart: null });
+        document.body.style.cursor = "grabbing";
+      }
+      if (rig.dragging) {
+        rig.dragYaw += (e.clientX - lastX) * 0.011;
+        lastX = e.clientX;
+      }
+    };
+    const up = () => {
+      if (rig.dragging) {
+        rig.justDragged = true;
+        setTimeout(() => (rig.justDragged = false), 60);
+        document.body.style.cursor = "";
+      }
+      rig.dragging = false;
+      start = null;
+    };
+    el.addEventListener("pointerdown", down);
+    window.addEventListener("pointermove", move, { passive: true });
+    window.addEventListener("pointerup", up);
+    window.addEventListener("pointercancel", up);
+    return () => {
+      el.removeEventListener("pointerdown", down);
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      window.removeEventListener("pointercancel", up);
+    };
+  }, []);
+
+  /** Scrolls a pinned section to stop i of n (or sets it directly under reduced motion). */
+  const jumpTo = useCallback(
+    (selector: string, i: number, n: number, fallback: () => void) => {
+      const sec = document.querySelector<HTMLElement>(selector);
+      if (reduced || !sec) {
+        fallback();
+        choreograph();
+        return;
+      }
+      const top = sec.getBoundingClientRect().top + window.scrollY;
+      const span = sec.offsetHeight - window.innerHeight;
+      const y = top + (span * (i + 0.5)) / n;
+      if (lenis.current) lenis.current.scrollTo(y, { duration: 1.1 });
+      else window.scrollTo({ top: y, behavior: "auto" });
+    },
+    [reduced, choreograph],
+  );
+  const jumpToTour = useCallback(
+    (i: number) =>
+      jumpTo('[data-scene="tour"]', i, BUILD_STATES, () =>
+        useLanding.getState().setTour(i, i > 0 ? BUILD_STEPS[i - 1]!.part : null),
+      ),
+    [jumpTo],
+  );
+
+  const jumpToColorway = useCallback(
+    (i: number) =>
+      jumpTo("#colorways", i, COLORWAY_COUNT, () => useLanding.getState().setColorwayIndex(i)),
+    [jumpTo],
   );
 
   return (
-    <div ref={root}>
-      {/* One fixed 3D layer on the right half. It stays on screen while the page scrolls. */}
-      <div aria-hidden={false} className="pointer-events-none fixed inset-y-0 right-0 z-0 hidden w-full md:block lg:w-1/2">
-        <LandingScene explodeRef={explode} />
+    <div ref={root} className="relative">
+      <div
+        className="pointer-events-none fixed inset-0 z-10 transition-opacity duration-1000"
+        style={{ opacity: ready ? 1 : 0 }}
+      >
+        <LandingScene eventSource={root} />
       </div>
-      <div className="relative z-10">
-      <SiteHeader />
+      <Callouts />
+
       <main>
-        <section className="relative mx-auto grid min-h-[92dvh] max-w-7xl items-center gap-10 px-5 py-12 md:px-10">
-          <div className="relative z-10 space-y-8">
-            <h1 className="hero-title font-display text-[clamp(4.5rem,13vw,12rem)] leading-[0.86] font-black tracking-[-0.015em]">
-              Build your
-              <br />
-              pair.
-            </h1>
-            <p className="hero-sub max-w-md text-lg text-ink-muted">
-              Design a sneaker in real-time 3D, see it on your floor, and download the tech pack to make it.
-            </p>
-            <div className="hero-cta flex flex-wrap items-center gap-5">
-              <Link href="/studio/forge-runner" className="inline-flex items-center rounded-[var(--radius-control)] bg-accent px-6 py-3 font-semibold text-accent-ink transition-transform hover:scale-[1.03]">
-                Start designing
-              </Link>
-              <a href="#brands" className="text-sm font-semibold underline underline-offset-4">
-                Embed it in your store
-              </a>
-            </div>
-          </div>
-        </section>
-
-        <section ref={pin} className="relative" aria-labelledby="explode-heading" style={{ height: reduced ? "auto" : "260vh" }}>
-          <div className="pin-stage flex min-h-[90dvh] items-center">
-            <div className="mx-auto grid w-full max-w-7xl gap-10 px-5 md:px-10 lg:max-w-[46%] lg:pl-10">
-              <div className="space-y-5">
-                <h2 id="explode-heading" className="font-display text-6xl font-black">Eight pieces.<br />One pair.</h2>
-                <p className="max-w-md text-ink-muted">
-                  Every part has its own material, color and price. Scroll to take the shoe apart.
-                </p>
-                <ul className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
-                  {forgeRunner.parts.map((p, i) => (
-                    <li key={p.id} className="flex items-baseline gap-3 border-b border-line py-2" style={{ opacity: labelsOn || reduced ? 1 : 0.35, transition: "opacity 400ms" }}>
-                      <span className="tabular w-5 text-ink-muted">{String(i + 1)}</span>
-                      <span className="font-semibold">{p.label}</span>
-                      <span className="ml-auto text-ink-muted">{p.allowedMaterials.length} {p.allowedMaterials.length === 1 ? "material" : "materials"}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section id="materials" aria-labelledby="materials-heading" className="mx-auto max-w-7xl space-y-8 px-5 py-20 md:px-10">
-          <h2 id="materials-heading" className="font-display text-6xl font-black">Seven materials. Real surfaces.</h2>
-          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {MATERIAL_LIST.map((m, i) => (
-              <motion.li
-                key={m.id}
-                initial={{ opacity: 0, y: 18 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-60px" }}
-                transition={{ duration: 0.5, delay: i * 0.05, ease: [0.2, 0.8, 0.2, 1] }}
-                className={`rounded-[var(--radius-panel)] border border-line bg-surface p-5 ${i === 0 ? "lg:row-span-2" : ""}`}
-              >
-                <p className="font-display text-3xl font-extrabold">{m.label}</p>
-                <p className="mt-2 text-sm text-ink-muted">{m.description}</p>
-              </motion.li>
-            ))}
-          </ul>
-        </section>
-
-        <section id="brands" aria-labelledby="brands-heading" className="mx-auto max-w-7xl space-y-10 px-5 py-20 md:px-10">
-          <h2 id="brands-heading" className="font-display text-6xl font-black">Put it on your store.</h2>
-          <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr_1fr]">
-            {CAPABILITIES.map((c, i) => (
-              <motion.div
-                key={c.title}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.06 }}
-                className={`rounded-[var(--radius-panel)] border border-line bg-surface p-6 ${i === 0 ? "lg:row-span-2" : ""}`}
-              >
-                <h3 className="font-display text-2xl font-extrabold">{c.title}</h3>
-                <p className="mt-2 text-sm text-ink-muted">{c.body}</p>
-              </motion.div>
-            ))}
-          </div>
-          <div className="grid gap-6 lg:grid-cols-2">
-            <div className="relative">
-              <pre tabIndex={0} aria-label="Embed snippet" className="overflow-x-auto rounded-[var(--radius-panel)] bg-ink p-5 text-sm leading-relaxed text-paper">
-                <code>{SNIPPET}</code>
-              </pre>
-              <button
-                type="button"
-                onClick={async () => {
-                  await navigator.clipboard.writeText(SNIPPET);
-                  setCopied(true);
-                  toast.success("Snippet copied");
-                  setTimeout(() => setCopied(false), 1600);
-                }}
-                className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-[var(--radius-control)] bg-paper px-3 py-1.5 text-xs font-semibold text-ink"
-              >
-                {copied ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />} {copied ? "Copied" : "Copy"}
-              </button>
-            </div>
-            <div className="aspect-[16/10] overflow-hidden rounded-[var(--radius-panel)] border border-line bg-surface">
-              <iframe title="Live example of the embedded configurator" src="/embed/forge-runner?theme=light" loading="lazy" className="size-full border-0" />
-            </div>
-          </div>
-          <Link href="/docs" className="inline-block text-sm font-semibold underline underline-offset-4">
-            Read the embed docs
-          </Link>
-        </section>
-
-        <section aria-labelledby="colorways-h" className="mx-auto max-w-7xl space-y-6 px-5 pb-20 md:px-10">
-          <h2 id="colorways-h" className="font-display text-4xl font-extrabold">Start from a colorway</h2>
-          <ul tabIndex={0} aria-label="Colorways, scroll sideways" className="-mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-4 md:-mx-10 md:px-10">
-            {forgeRunner.colorways.map((c) => (
-              <li key={c.id} className="snap-start">
-                <Link href="/gallery" className="block w-56 rounded-[var(--radius-panel)] border border-line bg-surface p-5 hover:border-accent">
-                  <p className="font-display text-2xl font-extrabold">{c.name}</p>
-                  <p className="mt-1 line-clamp-2 text-sm text-ink-muted">{c.story}</p>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
+        <Hero />
+        <Tour reduced={reduced} onJump={jumpToTour} />
+        <Materials />
+        <Colorways reduced={reduced} onJump={jumpToColorway} />
+        <Capabilities />
+        <FinalCta />
       </main>
       <SiteFooter />
-      </div>
     </div>
   );
 }

@@ -28,3 +28,10 @@ Three files disable `react-hooks/immutability`. Three.js objects (materials, tex
 - Lighthouse, FPS and bundle-size budgets are not measured yet.
 - Vercel deployment and the GitHub push have not been done.
 - AI colorway route has no rate limit (the Upstash dependency was removed).
+
+## 2026-10-18: redesign and scope cut
+
+- The Haiku-built look was replaced with a new visual world ("Live Tech Pack"): cobalt stock, volt actions, Archivo condensed and Martian Mono, numbered part callouts tethered to the 3D shoe. Product facts live in `PRODUCT.md`.
+- Removed at the owner's request: bag, sizes, pricing, mock checkout, the embed SDK (`public/embed.js`, `/embed`) and the `/docs` page.
+- The home page uses one fixed, transparent R3F canvas. Each section marks a `data-slot`; the scroll choreographer in `components/landing/Landing.tsx` points the camera's view offset at that slot, so the shoe travels between sections without remounting.
+- Material swatches are baked from the CC0 normal and roughness maps by `scripts/bake-swatches.mjs` and multiplied over a color in CSS, so they show the real grain in any color.

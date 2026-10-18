@@ -1,21 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import { Dices, Sparkles } from "lucide-react";
-import type { ProductDef } from "@/lib/products/schema";
+import { ArrowRight, Dices, Sparkles } from "lucide-react";
+import type { PartConfig, ProductDef } from "@/lib/products/schema";
 import { useDesignStore } from "@/lib/design/store";
 import { generateColorway } from "@/lib/design/colorways";
+import { stockFor } from "@/lib/design/presentation";
 import { track } from "@/lib/analytics";
 import { toast } from "@/lib/toast";
 import { Button } from "@/components/ui/primitives";
 
 const EXAMPLES = ["Tokyo at night", "Desert sunrise", "Forest trail", "Pastel cafe"];
+type Parts = Record<string, Partial<PartConfig>>;
 
 export function ColorwaysPanel({ product }: { product: ProductDef }) {
   const [prompt, setPrompt] = useState("");
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const apply = (name: string, parts: Parameters<ReturnType<typeof useDesignStore.getState>["applyParts"]>[0], source: string) => {
+  const apply = (name: string, parts: Parts, source: string) => {
     useDesignStore.getState().applyParts(parts);
     toast.success(`${name} applied`);
     track("color_changed", { source });
@@ -24,9 +27,10 @@ export function ColorwaysPanel({ product }: { product: ProductDef }) {
   const generate = async () => {
     const text = prompt.trim();
     if (text.length < 3) {
-      toast.error("Describe the colorway in a few words");
+      setError("Describe the colorway in a few words, like “desert sunrise”.");
       return;
     }
+    setError(null);
     setBusy(true);
     track("ai_colorway_requested", { product: product.id });
     try {
@@ -37,69 +41,40 @@ export function ColorwaysPanel({ product }: { product: ProductDef }) {
       });
       if (res.status === 503) {
         apply("Generated colorway", generateColorway(product), "fallback");
-        toast.info("AI is off on this site, so here's a generated colorway instead.");
+        toast.info("AI colorways are off on this site, so this one was generated locally.");
         return;
       }
       if (res.status === 429) {
-        toast.error("You've made a lot of requests. Try again in an hour.");
+        setError("That's a lot of requests. Try again in an hour.");
         return;
       }
       if (!res.ok) {
-        toast.error("The colorway didn't come back. Try a different description.");
+        setError("The colorway didn't come back. Try a different description.");
         return;
       }
-      const data = (await res.json()) as { name: string; story: string; parts: Parameters<ReturnType<typeof useDesignStore.getState>["applyParts"]>[0] };
+      const data = (await res.json()) as { name: string; story: string; parts: Parts };
       apply(data.name, data.parts, "ai");
       toast.info(data.story);
     } catch {
-      toast.error("Couldn't reach the colorway service. Check your connection.");
+      setError("Couldn't reach the colorway service. Check your connection and try again.");
     } finally {
       setBusy(false);
     }
   };
 
   return (
-    <div className="space-y-6">
-      <section aria-labelledby="presets-heading" className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h3 id="presets-heading" className="font-semibold">
-            Presets
-          </h3>
-          <Button size="sm" variant="ghost" onClick={() => apply("Surprise colorway", generateColorway(product), "surprise")}>
-            <Dices size={16} aria-hidden="true" /> Surprise me
-          </Button>
-        </div>
-        <ul className="grid grid-cols-1 gap-2">
-          {product.colorways.map((c) => {
-            const swatches = Object.values(c.parts).map((p) => p?.color).filter((x): x is string => Boolean(x)).slice(0, 4);
-            return (
-              <li key={c.id}>
-                <button
-                  type="button"
-                  onClick={() => apply(c.name, c.parts, "preset")}
-                  className="flex w-full items-center gap-3 rounded-[var(--radius-control)] border border-line bg-surface p-3 text-left transition-colors hover:border-accent"
-                >
-                  <span className="flex shrink-0 overflow-hidden rounded-full border border-line">
-                    {swatches.map((hex, i) => (
-                      <span key={i} className="size-5" style={{ background: hex }} />
-                    ))}
-                  </span>
-                  <span className="min-w-0">
-                    <span className="block text-sm font-semibold">{c.name}</span>
-                    <span className="block truncate text-xs text-ink-muted">{c.story}</span>
-                  </span>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      </section>
-
-      <section aria-labelledby="ai-heading" className="space-y-3 border-t border-line pt-5">
-        <h3 id="ai-heading" className="flex items-center gap-2 font-semibold">
-          <Sparkles size={16} aria-hidden="true" /> Describe a colorway
+    <div className="space-y-8">
+      <section aria-labelledby="ai-heading" className="space-y-3">
+        <h3 id="ai-heading" className="flex items-center gap-2 text-sm font-bold">
+          <Sparkles size={16} aria-hidden="true" className="text-accent" /> Describe a colorway
         </h3>
-        <div className="flex gap-2">
+        <form
+          className="border-line bg-surface-2 focus-within:border-accent flex items-center gap-1 rounded-full border p-1"
+          onSubmit={(e) => {
+            e.preventDefault();
+            void generate();
+          }}
+        >
           <label htmlFor="ai-prompt" className="sr-only">
             Describe a colorway
           </label>
@@ -108,23 +83,85 @@ export function ColorwaysPanel({ product }: { product: ProductDef }) {
             value={prompt}
             maxLength={200}
             onChange={(e) => setPrompt(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") void generate();
-            }}
             placeholder="Tokyo at night, neon on black"
-            className="h-10 min-w-0 flex-1 rounded-[var(--radius-control)] border border-line bg-paper px-3 text-sm outline-none focus-visible:border-accent"
+            aria-invalid={Boolean(error)}
+            aria-describedby={error ? "ai-error" : undefined}
+            className="placeholder:text-ink-muted h-10 min-w-0 flex-1 bg-transparent px-3 text-sm outline-none"
           />
-          <Button variant="primary" disabled={busy} onClick={() => void generate()}>
+          <Button type="submit" variant="primary" disabled={busy} aria-busy={busy}>
             {busy ? "Designing…" : "Generate"}
           </Button>
-        </div>
-        <div className="flex flex-wrap gap-2">
+        </form>
+        {error ? (
+          <p id="ai-error" role="alert" className="text-danger text-sm">
+            {error}
+          </p>
+        ) : null}
+        <div className="flex flex-wrap gap-1.5">
           {EXAMPLES.map((e) => (
-            <button key={e} type="button" onClick={() => setPrompt(e)} className="rounded-full border border-line px-3 py-1 text-xs hover:border-accent">
+            <button
+              key={e}
+              type="button"
+              onClick={() => setPrompt(e)}
+              className="border-line hover:border-line-strong rounded-full border px-3 py-1 text-xs font-semibold"
+            >
               {e}
             </button>
           ))}
         </div>
+      </section>
+
+      <section aria-labelledby="presets-heading" className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 id="presets-heading" className="text-sm font-bold">
+            Colorways
+          </h3>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => apply("Surprise colorway", generateColorway(product), "surprise")}
+            aria-keyshortcuts="R"
+          >
+            <Dices size={15} aria-hidden="true" /> Surprise me
+          </Button>
+        </div>
+        <ul className="grid grid-cols-1 gap-2">
+          {product.colorways.map((c) => {
+            const stock = stockFor(c);
+            const swatches = Object.values(c.parts)
+              .map((p) => p?.color)
+              .filter((x): x is string => Boolean(x));
+            return (
+              <li key={c.id}>
+                <button
+                  type="button"
+                  onClick={() => apply(c.name, c.parts, "preset")}
+                  className="group flex w-full cursor-pointer items-center gap-3 overflow-hidden rounded-2xl p-3 pr-4 text-left transition-transform duration-300 ease-[var(--ease-out-expo)] hover:-translate-y-0.5"
+                  style={{ background: stock.field, color: stock.ink }}
+                >
+                  <span className="flex shrink-0 -space-x-1.5" aria-hidden="true">
+                    {swatches.slice(0, 4).map((hex, i) => (
+                      <span
+                        key={i}
+                        className="size-7 rounded-full border-[1.5px]"
+                        style={{ background: hex, borderColor: stock.ink }}
+                      />
+                    ))}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="display block text-[1.5rem]">{c.name}</span>
+                    <span className="block truncate text-xs">{c.story}</span>
+                  </span>
+                  <ArrowRight
+                    size={16}
+                    aria-hidden="true"
+                    className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
+                  />
+                </button>
+              </li>
+            );
+          })}
+        </ul>
       </section>
     </div>
   );
