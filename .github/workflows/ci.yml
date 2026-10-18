@@ -20,6 +20,5 @@ jobs:
       - run: npm test
       - run: npm run build
       - run: npx playwright install --with-deps chromium
+      # Playwright starts the app built above (see webServer in playwright.config.ts).
       - run: npm run test:e2e
-        env:
-          BASE_URL: http://localhost:3000
