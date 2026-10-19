@@ -11,6 +11,7 @@ const SharedGraphic = z.object({
   font: z.string().max(60).optional(),
   color: z.string().regex(/^#[0-9a-fA-F]{6}$/).optional(),
   partId: z.string(),
+  mesh: z.string().max(80).optional(),
   position: Vec3,
   normal: Vec3,
   rotation: z.number(),

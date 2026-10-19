@@ -15,7 +15,7 @@ export const forgeRunner = ProductDef.parse({
   tagline: "A low-profile trainer built for city miles.",
   modelUrl: "/models/forge-runner.glb",
   basePrice: 129,
-  currency: "EUR",
+  currency: "USD",
   realLengthMeters: 0.28,
   parts: [
     {

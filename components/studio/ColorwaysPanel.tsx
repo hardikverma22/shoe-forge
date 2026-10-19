@@ -4,12 +4,22 @@ import { ArrowRight, Dices } from "lucide-react";
 import type { PartConfig, ProductDef } from "@/lib/products/schema";
 import { useDesignStore } from "@/lib/design/store";
 import { generateColorway } from "@/lib/design/colorways";
-import { stockFor } from "@/lib/design/presentation";
+import { designFromColorway, stockFor } from "@/lib/design/presentation";
 import { track } from "@/lib/analytics";
 import { toast } from "@/lib/toast";
 import { Button } from "@/components/ui/primitives";
 
 type Parts = Record<string, Partial<PartConfig>>;
+
+/** Every part of a preset, finish overrides cleared (the store merges patches into the parts). */
+function presetParts(product: ProductDef, colorway: ProductDef["colorways"][number]): Parts {
+  return Object.fromEntries(
+    Object.entries(designFromColorway(product, colorway).parts).map(([id, cfg]) => [
+      id,
+      { roughness: undefined, sheen: undefined, ...cfg },
+    ]),
+  );
+}
 
 export function ColorwaysPanel({ product }: { product: ProductDef }) {
 
@@ -46,7 +56,9 @@ export function ColorwaysPanel({ product }: { product: ProductDef }) {
               <li key={c.id}>
                 <button
                   type="button"
-                  onClick={() => apply(c.name, c.parts, "preset")}
+                  // A preset is the whole shoe: start from the defaults, so nothing from the
+                  // previous colorway (a gum sole, a finish override) carries over.
+                  onClick={() => apply(c.name, presetParts(product, c), "preset")}
                   className="group flex w-full cursor-pointer items-center gap-3 overflow-hidden rounded-2xl p-3 pr-4 text-left transition-transform duration-300 ease-[var(--ease-out-expo)] hover:-translate-y-0.5"
                   style={{ background: stock.field, color: stock.ink }}
                 >

@@ -26,11 +26,24 @@ export const PartConfig = z.object({
 });
 export type PartConfig = z.infer<typeof PartConfig>;
 
+/**
+ * Where a part lives in a textured ("tint") model: a whole material, or one color region of it
+ * (see scripts/region-masks.mjs). The part is recolored in a shader that keeps the texture's
+ * own shading and detail.
+ */
+export const PartSource = z.object({
+  material: z.string(),
+  region: z.number().int().min(0).max(8).optional(),
+});
+export type PartSource = z.infer<typeof PartSource>;
+
 export const PartDef = z.object({
   id: z.string(),
   label: z.string(),
-  /** Name of the glTF node for this part (see scripts/split-parts.mjs). */
-  meshName: z.string(),
+  /** Name of the glTF node for this part ("preset" products, see scripts/split-parts.mjs). */
+  meshName: z.string().default(""),
+  /** Material or region for this part ("tint" products). */
+  source: PartSource.optional(),
   allowedMaterials: z.array(MaterialId).min(1),
   default: PartConfig,
   description: z.string(),
@@ -61,9 +74,27 @@ export const ColorwayPreset = z.object({
 });
 export type ColorwayPreset = z.infer<typeof ColorwayPreset>;
 
+export const NamedColor = z.object({ hex: Hex, name: z.string() });
+export type NamedColor = z.infer<typeof NamedColor>;
+
+export const CATEGORIES = ["Running", "Basketball", "Court", "Skate", "Terrace", "Canvas"] as const;
+
 export const ProductDef = z.object({
   id: z.string(),
   name: z.string(),
+  /**
+   * "preset": untextured parts that take our PBR material presets (Forge Runner).
+   * "tint": a textured model (often a photo scan) whose parts are recolored in place.
+   */
+  kind: z.enum(["preset", "tint"]).default("preset"),
+  brand: z.string().default("Shoe Forge"),
+  category: z.enum(CATEGORIES).default("Running"),
+  /** Who made the 3D model, and under which license (shown in the studio and credits). */
+  credit: z.object({ author: z.string(), url: z.string(), license: z.string() }).optional(),
+  /** Turns the source model so the toe points +x, up is +y and the outer side faces +z (degrees). */
+  orientation: z.object({ x: z.number().default(0), y: z.number().default(0), z: z.number().default(0) }).default({ x: 0, y: 0, z: 0 }),
+  /** Named swatches shown in the studio (falls back to `palette`). */
+  colors: z.array(NamedColor).optional(),
   tagline: z.string(),
   modelUrl: z.string(),
   basePrice: z.number().positive(),

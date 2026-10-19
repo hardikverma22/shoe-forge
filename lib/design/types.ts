@@ -13,6 +13,8 @@ export type Graphic = {
   font?: string;
   color?: string;
   partId: string;
+  /** The mesh the graphic is printed on (textured models, where a part is a region of a mesh). */
+  mesh?: string;
   /** Surface point and normal in the part's local space. */
   position: Vec3;
   normal: Vec3;

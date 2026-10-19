@@ -175,7 +175,7 @@ export default function GalleryPage() {
               </p>
             </div>
             <Link
-              href="/studio/forge-runner"
+              href="/shoes"
               className="bg-accent text-accent-ink inline-flex h-12 items-center gap-2 rounded-full px-6 font-bold"
             >
               New design <ArrowUpRight size={18} aria-hidden="true" />
@@ -199,7 +199,7 @@ export default function GalleryPage() {
                 Design a pair, then press Save in the studio (or Ctrl/⌘ + S). It shows up here with
                 a picture.
               </p>
-              <Link href="/studio/forge-runner" className="text-accent font-bold underline">
+              <Link href="/shoes" className="text-accent font-bold underline">
                 Start designing
               </Link>
             </div>

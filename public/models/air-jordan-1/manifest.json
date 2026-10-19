@@ -1,0 +1,48 @@
+{
+  "meshes": [
+    {
+      "node": "Laces_R_MAT_Laces_R_0",
+      "mesh": "Laces_R_MAT_Laces_R_0",
+      "material": "MAT_Laces_R"
+    },
+    {
+      "node": "Shoe_R_MAT_Shoe_R_0",
+      "mesh": "Shoe_R_MAT_Shoe_R_0",
+      "material": "MAT_Shoe_R"
+    },
+    {
+      "node": "Sole_R_MAT_Sole_R_0",
+      "mesh": "Sole_R_MAT_Sole_R_0",
+      "material": "MAT_Sole_R"
+    }
+  ],
+  "regions": {
+    "MAT_Shoe_R": [
+      {
+        "region": 0,
+        "mean": "#0E0E0E",
+        "share": 0.5673
+      },
+      {
+        "region": 1,
+        "mean": "#C2C2C2",
+        "share": 0.1846
+      },
+      {
+        "region": 2,
+        "mean": "#A12024",
+        "share": 0.1885
+      },
+      {
+        "region": 3,
+        "mean": "#F2F1F1",
+        "share": 0.0226
+      },
+      {
+        "region": 4,
+        "mean": "#BD272C",
+        "share": 0.0371
+      }
+    ]
+  }
+}

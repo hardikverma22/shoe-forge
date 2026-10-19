@@ -1,0 +1,45 @@
+{
+  "meshes": [
+    {
+      "node": "Object_4",
+      "mesh": "Object_0",
+      "material": "LACE"
+    },
+    {
+      "node": "Object_6",
+      "mesh": "Object_1",
+      "material": "RINGS"
+    },
+    {
+      "node": "Object_8",
+      "mesh": "Object_2",
+      "material": "FIRM"
+    },
+    {
+      "node": "Object_9",
+      "mesh": "Object_3",
+      "material": "SOIL"
+    },
+    {
+      "node": "Object_10",
+      "mesh": "Object_4",
+      "material": "SOIL_BLACK"
+    },
+    {
+      "node": "Object_11",
+      "mesh": "Object_5",
+      "material": "SOIL_FRONT"
+    },
+    {
+      "node": "Object_12",
+      "mesh": "Object_6",
+      "material": "soil_bottom"
+    },
+    {
+      "node": "Object_14",
+      "mesh": "Object_7",
+      "material": "LABLE"
+    }
+  ],
+  "regions": {}
+}

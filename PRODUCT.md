@@ -32,13 +32,17 @@ A configurator driven by a typed product schema and real PBR materials (leather,
 
 ## Brand Commitments
 
-- Name: Shoe Forge. Product: Forge Runner.
-- No real-world brand names or logos (Nike, Adidas, etc.). Original marks only (`public/marks/`).
+- Name: Shoe Forge. Original product: Forge Runner.
+- Since 2026-10-19 the user wants real brand silhouettes (Nike, Jordan, adidas, PUMA, Vans, Converse) and accepts the trademark risk for this side project. Brand names appear on the shoes and in the catalog; every page that lists them says it is a fan project, not affiliated or endorsed.
+- The brand shoes are Sketchfab models under CC BY 4.0 (PUMA Suede: CC BY-NC 4.0, so the project stays non-commercial). Credit each author in the studio and on /shoes.
+- Graphics library marks stay original (`public/marks/`).
 - Copy in plain sentence case; buttons say exactly what they do.
 
 ## Evidence on Hand
 
-- One real 3D model, seven real texture sets, four original marks, eight curated colorways with names and one-line stories (`lib/products/forge-runner.ts`).
+- The Forge Runner model, seven texture sets, the original mark library and eight curated colorways (`lib/products/forge-runner.ts`).
+- Eight brand shoes with three or four real colorways each (`lib/products/lineup.ts`, built by `scripts/import-shoes.mjs` from `scripts/shoes.mjs`). Air Force 1 and Dunk Low are clean CG models (one material per part); the rest are photo scans whose parts are color regions of the texture.
+- Prefer CG models with one material per part over photo scans. Scans with shattered texture atlases (the old Samba) cannot be split into clean parts and were dropped.
 - No customers, testimonials, press or usage numbers exist. Do not invent them.
 
 ## Product Principles

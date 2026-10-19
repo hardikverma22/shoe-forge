@@ -16,7 +16,8 @@ export const useToasts = create<ToastState>((set) => ({
   toasts: [],
   push: (message, tone = "info") => {
     const id = nextId++;
-    set((s) => ({ toasts: [...s.toasts.slice(-2), { id, message, tone }] }));
+    // The same message again replaces the old toast instead of stacking a copy.
+    set((s) => ({ toasts: [...s.toasts.filter((t) => t.message !== message).slice(-2), { id, message, tone }] }));
     setTimeout(() => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })), 3600);
   },
   dismiss: (id) => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),

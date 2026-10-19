@@ -8,6 +8,9 @@ type SceneState = {
   layout: ModelLayout | null;
   /** The product group, used by exports (GLB, PNG, video). */
   root: THREE.Object3D | null;
+  /** Callout/focus point per part in model space (textured models publish these directly). */
+  anchors: Record<string, [number, number, number]> | null;
+  setAnchors: (anchors: Record<string, [number, number, number]> | null) => void;
   setLayout: (layout: ModelLayout | null) => void;
   setRoot: (root: THREE.Object3D | null) => void;
 };
@@ -15,6 +18,8 @@ type SceneState = {
 export const useSceneMeta = create<SceneState>((set) => ({
   layout: null,
   root: null,
+  anchors: null,
+  setAnchors: (anchors) => set({ anchors }),
   setLayout: (layout) => set({ layout }),
   setRoot: (root) => set({ root }),
 }));

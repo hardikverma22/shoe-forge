@@ -265,6 +265,10 @@ function ColorSection({
     track("color_changed", { part: partId });
   };
 
+  // Named colors (brand shoes), like a real builder: the picked color's name is shown.
+  const named = product.colors;
+  const colorName = named?.find((c) => c.hex.toUpperCase() === color.toUpperCase())?.name;
+
   const swatch = (hex: string, label: string) => {
     const checked = color.toUpperCase() === hex.toUpperCase();
     return (
@@ -289,10 +293,15 @@ function ColorSection({
         <h4 id="color-heading" className="text-sm font-bold">
           Color
         </h4>
-        <span className="spec text-ink-muted">{color.toUpperCase()}</span>
+        <span className="spec text-ink-muted">
+          {colorName ? `${colorName} · ` : ""}
+          {color.toUpperCase()}
+        </span>
       </div>
       <div role="radiogroup" aria-label="Palette" className="grid grid-cols-6 gap-2.5">
-        {product.palette.map((hex) => swatch(hex, "Color"))}
+        {named
+          ? named.map((c) => swatch(c.hex, c.name))
+          : product.palette.map((hex) => swatch(hex, "Color"))}
       </div>
       {recent.length > 0 ? (
         <div className="space-y-2">

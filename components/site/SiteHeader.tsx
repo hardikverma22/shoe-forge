@@ -3,7 +3,7 @@ import { ArrowUpRight } from "lucide-react";
 import { Logo } from "./Logo";
 
 const links = [
-  { href: "/studio/forge-runner", label: "Studio" },
+  { href: "/shoes", label: "Shoes" },
   { href: "/gallery", label: "My designs" },
 ];
 
@@ -38,7 +38,7 @@ export function SiteHeader({
             </Link>
           ))}
           <Link
-            href="/studio/forge-runner"
+            href="/shoes"
             className={`group inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold transition-transform duration-300 ease-[var(--ease-out-expo)] hover:-translate-y-0.5 ${cta}`}
           >
             Start designing

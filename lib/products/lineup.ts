@@ -1,0 +1,306 @@
+import { ProductDef, type NamedColor } from "./schema";
+import { forgeRunner } from "./forge-runner";
+
+/**
+ * The brand lineup: real silhouettes from openly licensed Sketchfab models (see scripts/shoes.mjs).
+ * Parts are whole materials or color regions of the scan's texture, recolored in place.
+ * Region indices and default colors come from public/models/<id>/manifest.json.
+ * Fan project: not affiliated with or endorsed by any of these brands.
+ */
+
+export const NAMED_COLORS: NamedColor[] = [
+  { hex: "#F4F4F2", name: "White" },
+  { hex: "#EDE6D6", name: "Sail" },
+  { hex: "#8E9196", name: "Wolf Grey" },
+  { hex: "#4A4D52", name: "Cool Grey" },
+  { hex: "#111111", name: "Black" },
+  { hex: "#C8102E", name: "University Red" },
+  { hex: "#7A1F2B", name: "Team Maroon" },
+  { hex: "#FF5A1F", name: "Total Orange" },
+  { hex: "#F2C14E", name: "Varsity Maize" },
+  { hex: "#D7FF3A", name: "Volt" },
+  { hex: "#1F5C3A", name: "Pine Green" },
+  { hex: "#8DB9E8", name: "University Blue" },
+  { hex: "#1F4FBF", name: "Game Royal" },
+  { hex: "#1C2541", name: "Obsidian" },
+  { hex: "#6E3FB8", name: "Court Purple" },
+  { hex: "#F25C9C", name: "Laser Pink" },
+  { hex: "#B07A47", name: "Gum" },
+  { hex: "#D6A65C", name: "Wheat" },
+];
+
+const PALETTE = NAMED_COLORS.slice(0, 12).map((c) => c.hex);
+const VIEWS = forgeRunner.cameraViews;
+const sketchfab = (path: string) => `https://sketchfab.com/3d-models/${path}`;
+
+export const airJordan1 = ProductDef.parse({
+  id: "air-jordan-1",
+  name: "Air Jordan 1 High",
+  brand: "Jordan",
+  category: "Basketball",
+  kind: "tint",
+  tagline: "The 1985 high-top that started it all.",
+  modelUrl: "/models/air-jordan-1.glb",
+  orientation: { x: 0, y: 90, z: 0 },
+  credit: { author: "DeezVertz", url: sketchfab("nike-air-jordan-1-fbe52211197c4b449f29de5aa4eb0611"), license: "CC BY 4.0" },
+  basePrice: 180,
+  currency: "USD",
+  realLengthMeters: 0.3,
+  parts: [
+    { id: "base", label: "Quarter", source: { material: "MAT_Shoe_R", region: 1 }, allowedMaterials: ["leather", "suede", "patent"], default: { material: "leather", color: "#C2C2C2" }, description: "The quarter panels on both sides." },
+    { id: "overlays", label: "Toe box, heel and wing", source: { material: "MAT_Shoe_R", region: 2 }, allowedMaterials: ["leather", "suede", "patent"], default: { material: "leather", color: "#A12024" }, description: "The perforated toe box, the heel and the ankle wing with its logo." },
+    { id: "swoosh", label: "Swoosh, mudguard and collar", source: { material: "MAT_Shoe_R", region: 0 }, allowedMaterials: ["leather", "suede", "patent"], default: { material: "leather", color: "#0E0E0E" }, description: "The Swoosh, the mudguard around the toe, the eyestay and the collar." },
+    { id: "midsole", label: "Midsole", source: { material: "MAT_Shoe_R", region: 3 }, allowedMaterials: ["rubber"], default: { material: "rubber", color: "#F2F1F1" }, description: "The cupsole wall." },
+    { id: "outsole", label: "Outsole", source: { material: "MAT_Shoe_R", region: 4 }, allowedMaterials: ["rubber"], default: { material: "rubber", color: "#BD272C" }, description: "The rubber band at the bottom of the cupsole." },
+    { id: "laces", label: "Laces", source: { material: "MAT_Laces_R" }, allowedMaterials: ["canvas", "knit"], default: { material: "canvas", color: "#232323" }, description: "Flat laces." },
+    { id: "insole", label: "Insole", source: { material: "MAT_Sole_R" }, allowedMaterials: ["mesh", "leather"], default: { material: "mesh", color: "#1E1D1D" }, description: "The sockliner inside." },
+  ],
+  colors: NAMED_COLORS,
+  palette: PALETTE,
+  cameraViews: VIEWS,
+  graphicZones: ["base", "overlays", "swoosh"],
+  rules: [{ type: "maxGraphics", max: 4 }],
+  colorways: [
+    { id: "bred-toe", name: "Bred Toe", story: "Gym red toe and heel, black mudguard, white quarter.", parts: { base: { color: "#F4F4F2" }, overlays: { color: "#C8102E" }, swoosh: { color: "#111111" }, midsole: { color: "#F4F4F2" }, outsole: { color: "#C8102E" }, laces: { color: "#111111" } } },
+    { id: "royal-toe", name: "Royal Toe", story: "Game royal toe and heel against black.", parts: { base: { color: "#F4F4F2" }, overlays: { color: "#1F4FBF" }, swoosh: { color: "#111111" }, midsole: { color: "#F4F4F2" }, outsole: { color: "#1F4FBF" }, laces: { color: "#111111" } } },
+    { id: "shadow-toe", name: "Shadow Toe", story: "Wolf grey toe and heel, black, white.", parts: { base: { color: "#F4F4F2" }, overlays: { color: "#8E9196" }, swoosh: { color: "#111111" }, midsole: { color: "#F4F4F2" }, outsole: { color: "#4A4D52" }, laces: { color: "#111111" } } },
+  ],
+});
+
+export const chuckTaylor = ProductDef.parse({
+  id: "chuck-taylor",
+  name: "Chuck Taylor All Star High",
+  brand: "Converse",
+  category: "Canvas",
+  kind: "tint",
+  tagline: "Canvas, rubber and a star on the ankle since 1917.",
+  modelUrl: "/models/chuck-taylor.glb",
+  orientation: { x: 0, y: 0, z: 0 },
+  credit: { author: "turbopurr", url: sketchfab("converse-classic-0c6ee67086ed43ff8f531a5db991c8ee"), license: "CC BY 4.0" },
+  basePrice: 70,
+  currency: "USD",
+  realLengthMeters: 0.29,
+  parts: [
+    { id: "canvas", label: "Canvas", source: { material: "FIRM" }, allowedMaterials: ["canvas", "suede", "leather"], default: { material: "canvas", color: "#454442" }, description: "The canvas upper." },
+    { id: "laces", label: "Laces", source: { material: "LACE" }, allowedMaterials: ["canvas"], default: { material: "canvas", color: "#C6C2BC" }, description: "Flat cotton laces." },
+    { id: "eyelets", label: "Eyelets", source: { material: "RINGS" }, allowedMaterials: ["rubber", "patent"], default: { material: "rubber", color: "#B3B3B3" }, description: "Metal rings for the laces." },
+    { id: "sidewall", label: "Sidewall and toe cap", source: { material: "SOIL" }, allowedMaterials: ["rubber"], default: { material: "rubber", color: "#FFFFFF" }, description: "The vulcanized rubber wall and the toe cap on top." },
+    { id: "stripe", label: "Sidewall stripe", source: { material: "SOIL_BLACK" }, allowedMaterials: ["rubber"], default: { material: "rubber", color: "#111111" }, description: "The thin line around the foxing." },
+    { id: "toecap", label: "Toe bumper", source: { material: "SOIL_FRONT" }, allowedMaterials: ["rubber", "patent"], default: { material: "rubber", color: "#FFF7F7" }, description: "The rubber bumper around the front of the toe." },
+    { id: "outsole", label: "Outsole", source: { material: "soil_bottom" }, allowedMaterials: ["rubber"], default: { material: "rubber", color: "#454442" }, description: "Diamond-tread rubber." },
+    { id: "label", label: "Ankle patch", source: { material: "LABLE" }, allowedMaterials: ["rubber", "leather"], default: { material: "rubber", color: "#454442" }, description: "The round star patch on the inner ankle." },
+  ],
+  colors: NAMED_COLORS,
+  palette: PALETTE,
+  cameraViews: VIEWS,
+  graphicZones: ["canvas"],
+  rules: [{ type: "maxGraphics", max: 4 }],
+  colorways: [
+    { id: "optical-white", name: "Optical White", story: "All white, the summer one.", parts: { canvas: { color: "#F4F4F2" }, laces: { color: "#F4F4F2" }, stripe: { color: "#F4F4F2" } } },
+    { id: "navy", name: "Navy", story: "Obsidian canvas with white laces.", parts: { canvas: { color: "#1C2541" }, laces: { color: "#F4F4F2" } } },
+    { id: "maroon", name: "Maroon", story: "Team maroon with a cream toe.", parts: { canvas: { color: "#7A1F2B" }, toecap: { color: "#EDE6D6" }, sidewall: { color: "#EDE6D6" } } },
+  ],
+});
+
+export const dunkLow = ProductDef.parse({
+  id: "dunk-low",
+  name: "Nike Dunk Low",
+  brand: "Nike",
+  category: "Court",
+  kind: "tint",
+  tagline: "College colors, made for the court in 1985.",
+  modelUrl: "/models/dunk-low.glb",
+  orientation: { x: 0, y: 0, z: 0 },
+  credit: { author: "kirilldrac78", url: sketchfab("dunk-low-4a3dd6224c2e4c20816ffc159fd82879"), license: "CC BY 4.0" },
+  basePrice: 115,
+  currency: "USD",
+  realLengthMeters: 0.29,
+  // A clean CG model: every part is its own flat material, so each recolors exactly.
+  parts: [
+    { id: "base", label: "Base", source: { material: "Blue_Shammy_Leather" }, allowedMaterials: ["leather", "suede", "patent"], default: { material: "leather", color: "#D1D1D1" }, description: "Toe box and quarter panels." },
+    { id: "overlays", label: "Overlays", source: { material: "Blue_Suede_Leather" }, allowedMaterials: ["leather", "suede", "patent"], default: { material: "suede", color: "#4F4F4F" }, description: "Mudguard, eyestay and heel overlays." },
+    { id: "swoosh", label: "Swoosh", source: { material: "Yellow_Shammy_Leather" }, allowedMaterials: ["leather", "suede", "patent"], default: { material: "leather", color: "#806B9E" }, description: "The Swoosh on both sides." },
+    { id: "laces", label: "Laces", source: { material: "Material.005" }, allowedMaterials: ["canvas"], default: { material: "canvas", color: "#E7E7E7" }, description: "Flat laces." },
+    { id: "tongue", label: "Tongue", source: { material: "Copper_Grid" }, allowedMaterials: ["mesh", "canvas", "leather"], default: { material: "mesh", color: "#E7E7E7" }, description: "The nylon tongue." },
+    { id: "lining", label: "Collar lining", source: { material: "Material.003" }, allowedMaterials: ["mesh", "leather"], default: { material: "mesh", color: "#E7E7E7" }, description: "Padded collar and lining." },
+    { id: "tag", label: "Tongue tag", source: { material: "Material.001" }, allowedMaterials: ["leather", "canvas"], default: { material: "leather", color: "#E7E7E7" }, description: "The tag at the top of the tongue." },
+    { id: "stitching", label: "Stitching", source: { material: "Material.002" }, allowedMaterials: ["canvas"], default: { material: "canvas", color: "#575757" }, description: "Thread around every panel." },
+    { id: "midsole", label: "Midsole", source: { material: "Material.009" }, allowedMaterials: ["rubber"], default: { material: "rubber", color: "#4A4A4A" }, description: "The cupsole wall." },
+    { id: "outsole", label: "Outsole", source: { material: "Material.008" }, allowedMaterials: ["rubber"], default: { material: "rubber", color: "#504368" }, description: "Rubber traction underfoot, and the sockliner." },
+  ],
+  colors: NAMED_COLORS,
+  palette: PALETTE,
+  cameraViews: VIEWS,
+  graphicZones: ["base", "overlays"],
+  rules: [{ type: "maxGraphics", max: 4 }],
+  colorways: [
+    { id: "panda", name: "Panda", story: "White base, black overlays: the one everyone owns.", parts: { base: { color: "#F4F4F2" }, overlays: { color: "#111111", material: "leather" }, swoosh: { color: "#111111" }, laces: { color: "#F4F4F2" }, tongue: { color: "#F4F4F2" }, stitching: { color: "#F4F4F2" }, midsole: { color: "#F4F4F2" }, outsole: { color: "#111111" } } },
+    { id: "syracuse", name: "Syracuse", story: "White and total orange.", parts: { base: { color: "#F4F4F2" }, overlays: { color: "#FF5A1F", material: "leather" }, swoosh: { color: "#FF5A1F" }, laces: { color: "#F4F4F2" }, tongue: { color: "#F4F4F2" }, stitching: { color: "#F4F4F2" }, midsole: { color: "#F4F4F2" }, outsole: { color: "#FF5A1F" } } },
+    { id: "kentucky", name: "Kentucky", story: "White and game royal.", parts: { base: { color: "#F4F4F2" }, overlays: { color: "#1F4FBF", material: "leather" }, swoosh: { color: "#1F4FBF" }, laces: { color: "#F4F4F2" }, tongue: { color: "#F4F4F2" }, stitching: { color: "#F4F4F2" }, midsole: { color: "#F4F4F2" }, outsole: { color: "#1F4FBF" } } },
+  ],
+});
+
+export const superstar = ProductDef.parse({
+  id: "superstar",
+  name: "adidas Superstar",
+  brand: "adidas",
+  category: "Court",
+  kind: "tint",
+  tagline: "The shell toe, from the court to hip-hop.",
+  modelUrl: "/models/superstar.glb",
+  orientation: { x: 0, y: 0, z: 0 },
+  credit: { author: "whiteboydime", url: sketchfab("adidas-superstar-7ea0ff1d54af4209bac2921ee37110b6"), license: "CC BY 4.0" },
+  basePrice: 100,
+  currency: "USD",
+  realLengthMeters: 0.29,
+  parts: [
+    { id: "upper", label: "Upper", source: { material: "superstar", region: 0 }, allowedMaterials: ["leather", "suede", "patent"], default: { material: "leather", color: "#1D1E1E" }, description: "The leather upper." },
+    { id: "stripes", label: "Three Stripes", source: { material: "superstar", region: 1 }, allowedMaterials: ["leather", "patent"], default: { material: "leather", color: "#BBBAB8" }, description: "Serrated Three Stripes and heel tab." },
+    { id: "shell", label: "Shell toe", source: { material: "superstar", region: 3 }, allowedMaterials: ["rubber"], default: { material: "rubber", color: "#A1978C" }, description: "The rubber shell toe and sidewall." },
+    { id: "outsole", label: "Outsole", source: { material: "sole" }, allowedMaterials: ["rubber"], default: { material: "rubber", color: "#988B81" }, description: "The herringbone cupsole." },
+  ],
+  colors: NAMED_COLORS,
+  palette: PALETTE,
+  cameraViews: VIEWS,
+  graphicZones: ["upper"],
+  rules: [{ type: "maxGraphics", max: 4 }],
+  colorways: [
+    { id: "core-white", name: "Core White", story: "White leather, black stripes.", parts: { upper: { color: "#F4F4F2" }, stripes: { color: "#111111" }, shell: { color: "#F4F4F2" }, outsole: { color: "#F4F4F2" } } },
+    { id: "core-black", name: "Core Black", story: "Black with white stripes.", parts: { upper: { color: "#111111" }, stripes: { color: "#F4F4F2" }, shell: { color: "#F4F4F2" }, outsole: { color: "#F4F4F2" } } },
+    { id: "royal", name: "Royal", story: "White with game royal stripes.", parts: { upper: { color: "#F4F4F2" }, stripes: { color: "#1F4FBF" }, shell: { color: "#F4F4F2" }, outsole: { color: "#F4F4F2" } } },
+  ],
+});
+
+export const pumaSuede = ProductDef.parse({
+  id: "puma-suede",
+  name: "PUMA Suede Classic",
+  brand: "PUMA",
+  category: "Court",
+  kind: "tint",
+  tagline: "The b-boy suede since 1968.",
+  modelUrl: "/models/puma-suede.glb",
+  orientation: { x: 0, y: 90, z: 0 },
+  credit: { author: "Toni Escribano Llorente", url: sketchfab("puma-suede-5b098581cb7040d8ba30955ddf2e04c8"), license: "CC BY-NC 4.0" },
+  basePrice: 75,
+  currency: "USD",
+  realLengthMeters: 0.29,
+  parts: [
+    { id: "upper", label: "Suede upper", source: { material: "material_0", region: 0 }, allowedMaterials: ["suede", "leather"], default: { material: "suede", color: "#DA4750" }, description: "Soft suede upper." },
+    { id: "formstrip", label: "Formstrip", source: { material: "material_0", region: 1 }, allowedMaterials: ["leather", "suede"], default: { material: "leather", color: "#DEC9BD" }, description: "The Formstrip on both sides." },
+    { id: "laces", label: "Laces", source: { material: "material_0", region: 3 }, allowedMaterials: ["canvas"], default: { material: "canvas", color: "#D21E39" }, description: "Fat laces." },
+    { id: "sole", label: "Sole", source: { material: "material_0", region: 4 }, allowedMaterials: ["rubber"], default: { material: "rubber", color: "#DAC3B6" }, description: "The rubber cupsole." },
+    { id: "lining", label: "Lining", source: { material: "material_0", region: 5 }, allowedMaterials: ["leather", "mesh"], default: { material: "leather", color: "#9D948B" }, description: "Inner lining and insole." },
+  ],
+  colors: NAMED_COLORS,
+  palette: PALETTE,
+  cameraViews: VIEWS,
+  graphicZones: ["upper"],
+  rules: [{ type: "maxGraphics", max: 4 }],
+  colorways: [
+    { id: "black-white", name: "Black White", story: "Black suede, white Formstrip.", parts: { upper: { color: "#111111" }, laces: { color: "#111111" }, formstrip: { color: "#F4F4F2" }, sole: { color: "#F4F4F2" } } },
+    { id: "peacoat", name: "Peacoat", story: "Navy suede with white.", parts: { upper: { color: "#1C2541" }, laces: { color: "#1C2541" }, formstrip: { color: "#F4F4F2" }, sole: { color: "#F4F4F2" } } },
+    { id: "green", name: "Amazon Green", story: "Pine green suede.", parts: { upper: { color: "#1F5C3A" }, laces: { color: "#1F5C3A" }, formstrip: { color: "#F4F4F2" }, sole: { color: "#F4F4F2" } } },
+  ],
+});
+
+export const oldSkool = ProductDef.parse({
+  id: "old-skool",
+  name: "Vans Old Skool",
+  brand: "Vans",
+  category: "Skate",
+  kind: "tint",
+  tagline: "The skate shoe with the side stripe, 1977.",
+  modelUrl: "/models/old-skool.glb",
+  orientation: { x: 0, y: 90, z: 0 },
+  credit: { author: "thesidekick", url: sketchfab("vans-old-skool-green-5f8241541e7846af869b6bb0ceb72adf"), license: "CC BY 4.0" },
+  basePrice: 70,
+  currency: "USD",
+  realLengthMeters: 0.29,
+  parts: [
+    { id: "suede", label: "Suede panels", source: { material: "Default_OBJ", region: 1 }, allowedMaterials: ["suede", "leather"], default: { material: "suede", color: "#314B3B" }, description: "Toe, eyestay and heel in suede." },
+    { id: "canvas", label: "Canvas", source: { material: "Default_OBJ", region: 3 }, allowedMaterials: ["canvas", "suede"], default: { material: "canvas", color: "#6F7668" }, description: "Canvas quarter panels." },
+    { id: "stripe", label: "Side stripe and sidewall", source: { material: "Default_OBJ", region: 0 }, allowedMaterials: ["leather", "rubber"], default: { material: "leather", color: "#B3B3B1" }, description: "The jazz stripe and the white sidewall." },
+    { id: "outsole", label: "Outsole", source: { material: "Default_OBJ", region: 2 }, allowedMaterials: ["rubber"], default: { material: "rubber", color: "#693826" }, description: "Waffle rubber outsole." },
+  ],
+  colors: NAMED_COLORS,
+  palette: PALETTE,
+  cameraViews: VIEWS,
+  graphicZones: ["suede", "canvas"],
+  rules: [{ type: "maxGraphics", max: 4 }],
+  colorways: [
+    { id: "black-white", name: "Black White", story: "The classic: black with a white stripe.", parts: { suede: { color: "#111111" }, canvas: { color: "#111111" }, stripe: { color: "#F4F4F2" } } },
+    { id: "navy", name: "Navy", story: "Obsidian with white.", parts: { suede: { color: "#1C2541" }, canvas: { color: "#1C2541" }, stripe: { color: "#F4F4F2" } } },
+    { id: "checker", name: "Red", story: "University red with white.", parts: { suede: { color: "#C8102E" }, canvas: { color: "#C8102E" }, stripe: { color: "#F4F4F2" } } },
+  ],
+});
+
+export const airForce1 = ProductDef.parse({
+  id: "air-force-1",
+  name: "Nike Air Force 1 '07",
+  brand: "Nike",
+  category: "Basketball",
+  kind: "tint",
+  tagline: "Bruce Kilgore's 1982 court shoe, the best-selling sneaker there is.",
+  modelUrl: "/models/air-force-1.glb",
+  orientation: { x: 0, y: 180, z: 0 },
+  credit: { author: "kirilldrac78", url: sketchfab("air-force1-9497c5d927b04f2281e86a0777784177"), license: "CC BY 4.0" },
+  basePrice: 115,
+  currency: "USD",
+  realLengthMeters: 0.29,
+  // A clean CG model: every part is its own flat material.
+  parts: [
+    { id: "upper", label: "Upper", source: { material: "Fine_leather_black" }, allowedMaterials: ["leather", "suede", "patent"], default: { material: "leather", color: "#E7E7E7" }, description: "Toe box, quarters, overlays and the Swoosh: one piece of leather." },
+    { id: "laces", label: "Laces", source: { material: "Hex_fabric_Cloth" }, allowedMaterials: ["canvas"], default: { material: "canvas", color: "#D7D7D7" }, description: "Flat laces." },
+    { id: "lining", label: "Collar lining", source: { material: "Fabric" }, allowedMaterials: ["mesh", "leather"], default: { material: "mesh", color: "#E3E3E3" }, description: "Padded collar and tongue lining." },
+    { id: "logos", label: "Logos", source: { material: "Fabric_Pattern_06" }, allowedMaterials: ["leather"], default: { material: "leather", color: "#E7E7E7" }, description: "Nike Air on the heel and the tongue." },
+    { id: "stitching", label: "Stitching", source: { material: "Material.004" }, allowedMaterials: ["canvas"], default: { material: "canvas", color: "#BCBCBC" }, description: "Thread around every panel." },
+    { id: "midsole", label: "Midsole", source: { material: "Material.001" }, allowedMaterials: ["rubber"], default: { material: "rubber", color: "#E7E7E7" }, description: "The Air sole wall, and the sockliner inside." },
+    { id: "outsole", label: "Outsole", source: { material: "Material.002" }, allowedMaterials: ["rubber"], default: { material: "rubber", color: "#E7E7E7" }, description: "The rubber band under the midsole." },
+    { id: "rim", label: "Outsole rim", source: { material: "Material.010" }, allowedMaterials: ["rubber"], default: { material: "rubber", color: "#D6D6D6" }, description: "The thin edge at the very bottom." },
+    { id: "tread", label: "Tread", source: { material: "Material.006" }, allowedMaterials: ["rubber"], default: { material: "rubber", color: "#FFFFFF" }, description: "The pivot-circle traction underfoot." },
+  ],
+  colors: NAMED_COLORS,
+  palette: PALETTE,
+  cameraViews: VIEWS,
+  graphicZones: ["upper"],
+  rules: [{ type: "maxGraphics", max: 4 }],
+  colorways: [
+    { id: "triple-white", name: "Triple White", story: "White on white on white.", parts: { upper: { color: "#F4F4F2" }, laces: { color: "#F4F4F2" }, lining: { color: "#F4F4F2" }, logos: { color: "#F4F4F2" }, stitching: { color: "#F4F4F2" }, midsole: { color: "#F4F4F2" }, outsole: { color: "#F4F4F2" }, rim: { color: "#F4F4F2" }, tread: { color: "#F4F4F2" } } },
+    { id: "triple-black", name: "Triple Black", story: "The all-black pair.", parts: { upper: { color: "#111111" }, laces: { color: "#111111" }, lining: { color: "#111111" }, logos: { color: "#111111" }, stitching: { color: "#111111" }, midsole: { color: "#111111" }, outsole: { color: "#111111" }, rim: { color: "#111111" }, tread: { color: "#111111" } } },
+    { id: "wheat", name: "Wheat", story: "Wheat nubuck on a gum sole.", parts: { upper: { color: "#D6A65C", material: "suede" }, laces: { color: "#D6A65C" }, lining: { color: "#D6A65C" }, logos: { color: "#D6A65C" }, stitching: { color: "#B07A47" }, midsole: { color: "#D6A65C" }, outsole: { color: "#B07A47" }, rim: { color: "#B07A47" }, tread: { color: "#B07A47" } } },
+    { id: "gum", name: "Gum Sole", story: "Crisp white on a gum bottom.", parts: { upper: { color: "#F4F4F2" }, laces: { color: "#F4F4F2" }, midsole: { color: "#F4F4F2" }, outsole: { color: "#B07A47" }, rim: { color: "#B07A47" }, tread: { color: "#B07A47" } } },
+  ],
+});
+
+export const gazelle = ProductDef.parse({
+  id: "gazelle",
+  name: "adidas Gazelle",
+  brand: "adidas",
+  category: "Terrace",
+  kind: "tint",
+  tagline: "Suede trainer from 1966, back on every terrace.",
+  modelUrl: "/models/gazelle.glb",
+  orientation: { x: 0, y: 39.4, z: 0 },
+  credit: { author: "kzolozhkov", url: sketchfab("adidas-gazelle-280ae99c7f4647c9aa450e140aa7a9de"), license: "CC BY 4.0" },
+  basePrice: 100,
+  currency: "USD",
+  realLengthMeters: 0.29,
+  parts: [
+    { id: "upper", label: "Suede upper", source: { material: "material", region: 1 }, allowedMaterials: ["suede", "leather"], default: { material: "suede", color: "#2B5839" }, description: "Soft suede upper and tongue." },
+    { id: "stripes", label: "Three Stripes and laces", source: { material: "material", region: 0 }, allowedMaterials: ["leather", "suede"], default: { material: "leather", color: "#B2B9C0" }, description: "Serrated Three Stripes, laces and heel trim." },
+    { id: "lining", label: "Heel tab and lining", source: { material: "material", region: 2 }, allowedMaterials: ["leather", "suede"], default: { material: "leather", color: "#808377" }, description: "The pull tab, collar lining and insole." },
+    { id: "sole", label: "Sole", source: { material: "material", region: 3 }, allowedMaterials: ["rubber"], default: { material: "rubber", color: "#8B8473" }, description: "The rubber cupsole." },
+  ],
+  colors: NAMED_COLORS,
+  palette: PALETTE,
+  cameraViews: VIEWS,
+  graphicZones: ["upper"],
+  rules: [{ type: "maxGraphics", max: 4 }],
+  colorways: [
+    { id: "collegiate-green", name: "Collegiate Green", story: "Green suede, white stripes: the original.", parts: { upper: { color: "#1F5C3A" }, stripes: { color: "#F4F4F2" } } },
+    { id: "core-black", name: "Core Black", story: "Black suede, white stripes, gum.", parts: { upper: { color: "#111111" }, stripes: { color: "#F4F4F2" }, sole: { color: "#B07A47" } } },
+    { id: "scarlet", name: "Scarlet", story: "Red suede with white stripes.", parts: { upper: { color: "#C8102E" }, stripes: { color: "#F4F4F2" } } },
+  ],
+});
+
+export const LINEUP: ProductDef[] = [airForce1, airJordan1, dunkLow, superstar, gazelle, pumaSuede, oldSkool, chuckTaylor];

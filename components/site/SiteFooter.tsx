@@ -12,8 +12,8 @@ export function SiteFooter() {
           </p>
         </div>
         <nav aria-label="Footer" className="flex flex-col gap-2 text-sm font-semibold">
-          <Link className="hover:text-volt w-fit" href="/studio/forge-runner">
-            Studio
+          <Link className="hover:text-volt w-fit" href="/shoes">
+            Shoes
           </Link>
           <Link className="hover:text-volt w-fit" href="/gallery">
             My designs
@@ -23,8 +23,8 @@ export function SiteFooter() {
           </a>
         </nav>
         <p className="spec text-on-night-2 max-w-xs leading-relaxed">
-          Textures: ambientCG, CC0 1.0. Fonts: Archivo and Martian Mono, OFL. No real brand names or
-          marks are used.
+          Textures: ambientCG, CC0 1.0. 3D models: Sketchfab creators, credited on the shoes page.
+          Fonts: Archivo and Martian Mono, OFL. A fan project, not affiliated with any shoe brand.
         </p>
       </div>
     </footer>

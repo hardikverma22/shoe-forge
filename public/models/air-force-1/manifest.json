@@ -1,0 +1,110 @@
+{
+  "meshes": [
+    {
+      "node": "Plane_Material.001_0",
+      "mesh": "Plane_Material.001_0",
+      "material": "Material.001"
+    },
+    {
+      "node": "Plane_Material.006_0",
+      "mesh": "Plane_Material.006_0",
+      "material": "Material.006"
+    },
+    {
+      "node": "Plane_Material.010_0",
+      "mesh": "Plane_Material.010_0",
+      "material": "Material.010"
+    },
+    {
+      "node": "Plane_Material.002_0",
+      "mesh": "Plane_Material.002_0",
+      "material": "Material.002"
+    },
+    {
+      "node": "Plane.001_Fine leather black_0",
+      "mesh": "Plane.001_Fine leather black_0",
+      "material": "Fine_leather_black"
+    },
+    {
+      "node": "Plane.001_Fabric_0",
+      "mesh": "Plane.001_Fabric_0",
+      "material": "Fabric"
+    },
+    {
+      "node": "Plane.002_Hex fabric Cloth_0",
+      "mesh": "Plane.002_Hex fabric Cloth_0",
+      "material": "Hex_fabric_Cloth"
+    },
+    {
+      "node": "Plane.002_Degradable Metal_0",
+      "mesh": "Plane.002_Degradable Metal_0",
+      "material": "Degradable_Metal"
+    },
+    {
+      "node": "Plane.002_Metal_0",
+      "mesh": "Plane.002_Metal_0",
+      "material": "Metal"
+    },
+    {
+      "node": "Plane.003__0",
+      "mesh": "Plane.003__0",
+      "material": "Plane.003__0"
+    },
+    {
+      "node": "Plane.004_Fabric Pattern 06_0",
+      "mesh": "Plane.004_Fabric Pattern 06_0",
+      "material": "Fabric_Pattern_06"
+    },
+    {
+      "node": "Plane.005_Material.004_0",
+      "mesh": "Plane.005_Material.004_0",
+      "material": "Material.004"
+    },
+    {
+      "node": "Plane.006_Material.004_0",
+      "mesh": "Plane.006_Material.004_0",
+      "material": "Material.004"
+    },
+    {
+      "node": "Plane.007_Material.004_0",
+      "mesh": "Plane.007_Material.004_0",
+      "material": "Material.004"
+    },
+    {
+      "node": "Plane.008_Material.004_0",
+      "mesh": "Plane.008_Material.004_0",
+      "material": "Material.004"
+    },
+    {
+      "node": "Plane.009_Material.004_0",
+      "mesh": "Plane.009_Material.004_0",
+      "material": "Material.004"
+    },
+    {
+      "node": "Plane.010_Material.004_0",
+      "mesh": "Plane.010_Material.004_0",
+      "material": "Material.004"
+    },
+    {
+      "node": "Plane.011_Material.004_0",
+      "mesh": "Plane.011_Material.004_0",
+      "material": "Material.004"
+    },
+    {
+      "node": "Plane.012_Material.004_0",
+      "mesh": "Plane.012_Material.004_0",
+      "material": "Material.004"
+    },
+    {
+      "node": "Plane.013_Material.004_0",
+      "mesh": "Plane.013_Material.004_0",
+      "material": "Material.004"
+    },
+    {
+      "node": "Plane.014_Material.004_0",
+      "mesh": "Plane.014_Material.004_0",
+      "material": "Material.004"
+    }
+  ],
+  "regions": {}
+}
