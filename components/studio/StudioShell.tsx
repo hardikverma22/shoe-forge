@@ -34,7 +34,12 @@ const StudioCanvas = dynamic(() => import("@/components/three/StudioCanvas"), { 
 
 const ACCENT = { light: "#1E2BFF", dark: "#D7FF3A" };
 const DEFAULT_GRAPHIC_SCALE = 0.2;
-const ZONE_HINT = "Graphics go on the upper or the heel patch.";
+
+function describeFirstPart(product: NonNullable<ReturnType<typeof getProduct>>, design: { parts: Record<string, { material: string; color: string }> }) {
+  const part = product.parts[0];
+  const cfg = part ? design.parts[part.id] : undefined;
+  return part && cfg ? `${part.label.toLowerCase()} in ${cfg.material}, ${cfg.color}` : "a shoe";
+}
 
 export function StudioShell({ productId }: { productId: string }) {
   const product = getProduct(productId);
@@ -56,14 +61,14 @@ export function StudioShell({ productId }: { productId: string }) {
   useEffect(() => {
     useSceneMeta.getState().setLayout(null);
     useStudioUI.getState().set({
-      selectedPart: "upper",
+      selectedPart: product?.parts[0]?.id ?? null,
       hoveredPart: null,
       placing: null,
       selectedGraphic: null,
       view: null,
       dragging: false,
     });
-  }, []);
+  }, [product]);
 
   // Load the design once: from a share link, from the gallery, or the default.
   useEffect(() => {
@@ -149,7 +154,8 @@ export function StudioShell({ productId }: { productId: string }) {
 
       if (kind === "click" && ui.placing) {
         if (!product.graphicZones.includes(partId)) {
-          toast.info(ZONE_HINT);
+          const zones = product.parts.filter((p) => product.graphicZones.includes(p.id)).map((p) => p.label.toLowerCase());
+          toast.info(`Graphics go on the ${new Intl.ListFormat("en", { type: "disjunction" }).format(zones)}.`);
           return;
         }
         const max = maxGraphics(product);
@@ -169,6 +175,8 @@ export function StudioShell({ productId }: { productId: string }) {
           font: ui.placing.font,
           color: ui.placing.color,
           partId,
+          // Textured shoes: a part is a region of a mesh, so the print belongs to the mesh.
+          mesh: product.kind === "tint" ? e.object.name : undefined,
           position,
           normal,
           rotation: 0,
@@ -185,7 +193,7 @@ export function StudioShell({ productId }: { productId: string }) {
 
       if (kind === "down" && ui.selectedGraphic) {
         const g = store.design?.graphics.find((x) => x.id === ui.selectedGraphic);
-        if (g && g.partId === partId) {
+        if (g && (g.mesh ? g.mesh === e.object.name : g.partId === partId)) {
           const gesture = createHistoryGesture<Graphic>((v) =>
             useDesignStore
               .getState()
@@ -300,11 +308,11 @@ export function StudioShell({ productId }: { productId: string }) {
   }, [product]);
 
   const decals = useCallback(
-    (partId: string) => {
+    (key: string) => {
       const graphics = useDesignStore.getState().design?.graphics ?? design?.graphics ?? [];
       return (
         graphics
-          .filter((g) => g.partId === partId && g.src)
+          .filter((g) => (g.mesh ?? g.partId) === key && g.src)
           // Each decal suspends on its own texture, so the rest of the scene never blinks out.
           .map((g) => (
             <Suspense key={g.id} fallback={null}>
@@ -340,7 +348,7 @@ export function StudioShell({ productId }: { productId: string }) {
                 product={product}
                 design={design}
                 accent={accent}
-                label={`${product.name} with a ${design.parts.upper?.material ?? "leather"} upper in ${design.parts.upper?.color ?? ""}. Use the parts list and the panel to change it.`}
+                label={`${product.name}, ${describeFirstPart(product, design)}. Use the parts list and the panel to change it.`}
                 overlay={overlay}
                 onSurface={onSurface}
                 controlsEnabled
@@ -370,7 +378,19 @@ export function StudioShell({ productId }: { productId: string }) {
                   </div>
                 ) : null}
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 flex items-end justify-between gap-3 p-3 lg:p-4">
-                  <SpecReadout product={product} design={design} />
+                  <div className="flex min-w-0 flex-col items-start gap-2">
+                    {product.credit ? (
+                      <a
+                        href={product.credit.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="spec text-ink-muted hover:text-ink pointer-events-auto hidden truncate px-1 lg:block"
+                      >
+                        3D model: {product.credit.author}, {product.credit.license}
+                      </a>
+                    ) : null}
+                    <SpecReadout product={product} design={design} />
+                  </div>
                   <ViewBar product={product} />
                 </div>
               </>

@@ -44,6 +44,26 @@
   color-scheme: light;
 }
 
+/* Landing sections are art-directed in fixed colors; this keeps theme-token components light inside them. */
+.force-light {
+  --paper: #e9eaee;
+  --surface: #ffffff;
+  --surface-2: #f5f6fc;
+  --ink: #0a0a12;
+  --ink-muted: #4b4f6e;
+  --line: #d3d6ea;
+  --line-strong: #0a0a12;
+  --accent: #1e2bff;
+  --accent-ink: #ffffff;
+  --select: #d7ff3a;
+  --select-ink: #0a0a12;
+  --danger: #d9321a;
+  --grid: color-mix(in oklab, #1e2bff 7%, transparent);
+  --studio-hi: #fbfbfc;
+  --studio-lo: #d9dbe0;
+  color-scheme: light;
+}
+
 .dark {
   --paper: #080912;
   --surface: #11132a;

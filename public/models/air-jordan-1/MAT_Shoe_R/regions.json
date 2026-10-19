@@ -1,0 +1,27 @@
+[
+  {
+    "region": 0,
+    "mean": "#0E0E0E",
+    "share": 0.5673
+  },
+  {
+    "region": 1,
+    "mean": "#C2C2C2",
+    "share": 0.1846
+  },
+  {
+    "region": 2,
+    "mean": "#A12024",
+    "share": 0.1885
+  },
+  {
+    "region": 3,
+    "mean": "#F2F1F1",
+    "share": 0.0226
+  },
+  {
+    "region": 4,
+    "mean": "#BD272C",
+    "share": 0.0371
+  }
+]

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect } from "react";
-import { ArrowLeft, Bookmark, Command, Link2, Redo2, Undo2 } from "lucide-react";
+import { ArrowLeft, Bookmark, ChevronDown, Command, Link2, Redo2, Undo2 } from "lucide-react";
 import { useStore } from "zustand";
 import type { ProductDef } from "@/lib/products/schema";
 import { useDesignStore } from "@/lib/design/store";
@@ -38,8 +38,8 @@ export function Toolbar({ product, onCommand }: { product: ProductDef; onCommand
   return (
     <header className="border-line bg-surface relative z-40 flex h-16 shrink-0 items-center gap-1 border-b px-2 sm:gap-2 sm:px-4">
       <Link
-        href="/"
-        aria-label="Back to home"
+        href="/shoes"
+        aria-label="All shoes"
         className="hover:bg-ink/6 grid size-10 shrink-0 place-items-center rounded-full lg:hidden"
       >
         <ArrowLeft size={18} aria-hidden="true" />
@@ -50,7 +50,18 @@ export function Toolbar({ product, onCommand }: { product: ProductDef; onCommand
       <span aria-hidden="true" className="bg-line mx-2 hidden h-7 w-px lg:block" />
 
       <div className="flex min-w-0 flex-1 items-center gap-2">
-        <span className="spec text-ink-muted hidden shrink-0 md:inline">{product.name} /</span>
+        <Link
+          href="/shoes"
+          title="Change shoe"
+          className="hover:bg-ink/6 text-ink-muted hover:text-ink hidden h-10 shrink-0 items-center gap-1 rounded-full px-3 md:inline-flex"
+        >
+          <span className="spec">
+            <span className="sr-only">Change shoe, now </span>
+            {product.name}
+          </span>
+          <ChevronDown size={14} aria-hidden="true" />
+        </Link>
+        <span aria-hidden="true" className="text-ink-muted hidden md:inline">/</span>
         <label className="sr-only" htmlFor="design-name">
           Design name
         </label>

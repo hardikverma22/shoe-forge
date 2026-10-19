@@ -20,6 +20,7 @@ import { BUILD_STEPS } from "@/lib/design/landing-store";
 import { Materials } from "./Materials";
 import { Colorways, colorwayAt, COLORWAY_COUNT } from "./Colorways";
 import { Capabilities } from "./Capabilities";
+import { Lineup } from "./Lineup";
 import { FinalCta } from "./FinalCta";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
@@ -309,6 +310,7 @@ export function Landing() {
         <Tour reduced={reduced} onJump={jumpToTour} />
         <Materials />
         <Colorways reduced={reduced} onJump={jumpToColorway} />
+        <Lineup />
         <Capabilities />
         <FinalCta />
       </main>

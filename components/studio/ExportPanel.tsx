@@ -96,6 +96,16 @@ export function ExportPanel({ product, design }: { product: ProductDef; design: 
           </Link>
           .
         </p>
+        {product.credit ? (
+          <p className="text-ink-muted text-xs leading-relaxed">
+            3D model by{" "}
+            <a href={product.credit.url} target="_blank" rel="noopener noreferrer" className="text-accent font-semibold underline">
+              {product.credit.author}
+            </a>
+            , {product.credit.license}. The downloaded model carries the same license. A fan project, not affiliated with{" "}
+            {product.brand}.
+          </p>
+        ) : null}
       </section>
     </div>
   );

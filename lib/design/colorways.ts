@@ -55,14 +55,18 @@ export function generateColorway(product: ProductDef, seed = Date.now()): Record
     return part.allowedMaterials.includes(preferred) ? preferred : part.default.material;
   };
 
-  return {
-    upper: { material: materialFor("upper", "leather"), color: upperColor },
-    toecap: { material: materialFor("toecap", "leather"), color: accent2 },
-    laces: { material: materialFor("laces", "canvas"), color: rand() > 0.5 ? upperColor : "#F4F4F2" },
-    lining: { material: materialFor("lining", "mesh"), color: lightTint },
-    sole: { material: materialFor("sole", "rubber"), color: sole },
-    stripes: { material: materialFor("stripes", "leather"), color: accent1 },
-    heel: { material: materialFor("heel", "leather"), color: accent2 },
-    tongue: { material: materialFor("tongue", "canvas"), color: accent1 },
-  };
+  // Colors by role, so any shoe works: the first part carries the base color, rubber is neutral,
+  // laces follow the base or go white, and the remaining panels alternate the two accents.
+  const laceColor = rand() > 0.5 ? upperColor : "#F4F4F2";
+  const out: Record<string, Partial<PartConfig>> = {};
+  let accent = 0;
+  product.parts.forEach((part, i) => {
+    const rubber = part.allowedMaterials.every((m) => m === "rubber");
+    if (rubber) out[part.id] = { material: "rubber", color: sole };
+    else if (part.id.includes("lace")) out[part.id] = { material: materialFor(part.id, "canvas"), color: laceColor };
+    else if (part.id === "lining") out[part.id] = { material: materialFor(part.id, "mesh"), color: lightTint };
+    else if (i === 0) out[part.id] = { material: materialFor(part.id, part.default.material), color: upperColor };
+    else out[part.id] = { material: materialFor(part.id, part.default.material), color: accent++ % 2 ? accent1 : accent2 };
+  });
+  return out;
 }

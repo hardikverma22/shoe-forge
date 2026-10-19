@@ -51,3 +51,6 @@ next-env.d.ts
 # design review captures (regenerated)
 /.impeccable/review/
 /.impeccable/questions/
+
+# Sketchfab source downloads (rebuilt by scripts/import-shoes.mjs)
+/assets/sketchfab/

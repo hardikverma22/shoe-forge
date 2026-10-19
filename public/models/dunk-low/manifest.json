@@ -1,0 +1,95 @@
+{
+  "meshes": [
+    {
+      "node": "Plane_Blue Suede Leather_0",
+      "mesh": "Plane_Blue Suede Leather_0",
+      "material": "Blue_Suede_Leather"
+    },
+    {
+      "node": "Plane_Blue Shammy Leather_0",
+      "mesh": "Plane_Blue Shammy Leather_0",
+      "material": "Blue_Shammy_Leather"
+    },
+    {
+      "node": "Plane_Yellow Shammy Leather_0",
+      "mesh": "Plane_Yellow Shammy Leather_0",
+      "material": "Yellow_Shammy_Leather"
+    },
+    {
+      "node": "Plane_Copper Grid_0",
+      "mesh": "Plane_Copper Grid_0",
+      "material": "Copper_Grid"
+    },
+    {
+      "node": "Plane_Material.003_0",
+      "mesh": "Plane_Material.003_0",
+      "material": "Material.003"
+    },
+    {
+      "node": "Plane.001_Material.009_0",
+      "mesh": "Plane.001_Material.009_0",
+      "material": "Material.009"
+    },
+    {
+      "node": "Plane.001_Material.008_0",
+      "mesh": "Plane.001_Material.008_0",
+      "material": "Material.008"
+    },
+    {
+      "node": "Plane.002_Material.005_0",
+      "mesh": "Plane.002_Material.005_0",
+      "material": "Material.005"
+    },
+    {
+      "node": "Plane.002_Material_0",
+      "mesh": "Plane.002_Material_0",
+      "material": "Material"
+    },
+    {
+      "node": "Plane.003_Material.004_0",
+      "mesh": "Plane.003_Material.004_0",
+      "material": "Material.004"
+    },
+    {
+      "node": "Plane.004_Material.001_0",
+      "mesh": "Plane.004_Material.001_0",
+      "material": "Material.001"
+    },
+    {
+      "node": "Plane.005_Material.002_0",
+      "mesh": "Plane.005_Material.002_0",
+      "material": "Material.002"
+    },
+    {
+      "node": "Plane.006_Material.002_0",
+      "mesh": "Plane.006_Material.002_0",
+      "material": "Material.002"
+    },
+    {
+      "node": "Plane.007_Material.002_0",
+      "mesh": "Plane.007_Material.002_0",
+      "material": "Material.002"
+    },
+    {
+      "node": "Plane.008_Material.007_0",
+      "mesh": "Plane.008_Material.007_0",
+      "material": "Material.007"
+    },
+    {
+      "node": "Plane.009_Material.002_0",
+      "mesh": "Plane.009_Material.002_0",
+      "material": "Material.002"
+    },
+    {
+      "node": "Plane.009_Material.010_0",
+      "mesh": "Plane.009_Material.010_0",
+      "material": "Material.010"
+    },
+    {
+      "node": "Plane.010_Material.007_0",
+      "mesh": "Plane.010_Material.007_0",
+      "material": "Material.007"
+    }
+  ],
+  "regions": {}
+}
