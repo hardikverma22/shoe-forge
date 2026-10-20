@@ -344,3 +344,76 @@
     opacity: 0;
   }
 }
+
+/* Intro loader ("casting the pair"): the line drawing animates in CSS before any script runs. */
+html.sf-loading {
+  overflow: hidden;
+}
+@keyframes sf-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.sf-loader-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: sf-draw 1.8s var(--ease-in-out-quart) 0.15s forwards;
+}
+.sf-loader-late {
+  animation-duration: 1.2s;
+  animation-delay: 0.9s;
+}
+.sf-loader-later {
+  animation-duration: 1.1s;
+  animation-delay: 1.3s;
+}
+@keyframes sf-drift {
+  to {
+    transform: translateX(-120px);
+  }
+}
+.sf-loader-drift {
+  animation: sf-drift 1.6s linear infinite;
+}
+@keyframes sf-blink {
+  to {
+    opacity: 0.25;
+  }
+}
+.sf-loader-blink {
+  animation: sf-blink 0.9s ease-in-out infinite alternate;
+}
+.sf-loader-pin {
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 0.5s var(--ease-out-expo),
+    transform 0.7s var(--ease-out-expo);
+}
+.sf-loader-pin[data-on] {
+  opacity: 1;
+  transform: none;
+}
+.sf-loader-row {
+  color: color-mix(in oklab, var(--color-night) 36%, transparent);
+  transition: color 0.4s var(--ease-out-expo);
+}
+.sf-loader-row[data-on] {
+  color: var(--color-night);
+}
+.sf-loader-tick {
+  transition:
+    background-color 0.3s var(--ease-out-expo),
+    transform 0.4s var(--ease-out-expo);
+}
+.sf-loader-row[data-on] .sf-loader-tick {
+  background-color: var(--color-volt);
+  border-color: var(--color-night);
+  transform: rotate(45deg);
+}
+
+/* The hero's entrance waits under the loader and plays as it lifts. */
+[data-intro="wait"] .hero-line,
+[data-intro="wait"] .hero-rise {
+  animation-play-state: paused;
+}

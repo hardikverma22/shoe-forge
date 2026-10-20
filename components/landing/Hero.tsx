@@ -7,7 +7,6 @@ import { MATERIALS } from "@/lib/materials/presets";
 import { useLanding } from "@/lib/design/landing-store";
 import { studioHref } from "@/lib/design/presentation";
 import { useStudioUI } from "@/lib/design/ui-store";
-import { useSceneMeta } from "@/lib/three/scene-store";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { partNumber } from "./Callouts";
 
@@ -49,7 +48,6 @@ function SpecLine() {
 
 export function Hero() {
   const hero = useLanding((s) => s.hero);
-  const ready = useSceneMeta((s) => s.layout !== null);
 
   return (
     <section
@@ -103,20 +101,7 @@ export function Hero() {
         </div>
 
         {/* Where the 3D shoe sits. The fixed canvas reads this box's position. */}
-        <div
-          data-slot
-          className="grid min-h-[40svh] w-full place-items-center md:aspect-[1.7] md:min-h-0"
-        >
-          {!ready ? (
-            <p role="status" className="spec text-on-sweep-2 flex items-center gap-2.5">
-              <span
-                aria-hidden="true"
-                className="border-night/20 border-t-night size-4 animate-spin rounded-full border-2"
-              />
-              Loading the 3D model
-            </p>
-          ) : null}
-        </div>
+        <div data-slot className="min-h-[40svh] w-full md:aspect-[1.7] md:min-h-0" />
 
         <div className="hero-rise flex flex-col gap-2 pb-4 md:hidden">
           <Link

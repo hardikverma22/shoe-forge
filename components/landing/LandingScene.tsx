@@ -3,7 +3,7 @@
 import * as THREE from "three";
 import { Suspense, useEffect, useMemo, useRef, type RefObject } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { ContactShadows, Preload } from "@react-three/drei";
+import { ContactShadows, Preload, useProgress } from "@react-three/drei";
 import { forgeRunner } from "@/lib/products/forge-runner";
 import { shownDesign, useLanding } from "@/lib/design/landing-store";
 import { rig, type Pose } from "@/lib/three/landing-rig";
@@ -11,6 +11,12 @@ import { useSceneMeta } from "@/lib/three/scene-store";
 import { computeAnchors } from "@/lib/three/anchors";
 import { Stage } from "@/components/three/Stage";
 import { ProductModel, type SurfaceEvent } from "@/components/three/ProductModel";
+
+// Download progress for the intro loader, published as soon as this chunk runs (before the
+// model is even requested). The loader itself stays free of three.js.
+useProgress.subscribe((s) => {
+  rig.loadProgress = s.total ? s.loaded / s.total : 0;
+});
 
 const FOV = 32;
 const TAN = Math.tan(THREE.MathUtils.degToRad(FOV / 2));

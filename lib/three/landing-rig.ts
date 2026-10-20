@@ -68,6 +68,8 @@ export const rig = {
   intro: 1,
   /** Set once the scene has compiled and drawn its first frames. */
   sceneReady: false,
+  /** Share of the 3D assets downloaded, 0 to 1 (drives the intro loader). */
+  loadProgress: 0,
   /** Skip easing (reduced motion). */
   instant: false,
   /** Written by the scene each frame, in CSS pixels. */
