@@ -18,7 +18,7 @@ export function Lineup() {
           </div>
           <div className="max-w-sm space-y-4">
             <p className="text-ink-muted text-lg leading-snug">
-              Air Force 1, Jordan 1, Dunk, Superstar, Gazelle, Suede, Old Skool and Chuck. Every panel is yours to recolor.
+              Air Force 1, Jordan 1, Dunk, Gazelle, Suede, Old Skool and Chuck. Every panel is yours to recolor.
             </p>
             <Link href="/shoes" className="group inline-flex items-center gap-1.5 text-sm font-bold underline-offset-4 hover:underline">
               See all shoes

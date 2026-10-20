@@ -1,0 +1,47 @@
+[
+  {
+    "region": 0,
+    "mean": "#B9B8B8",
+    "share": 0.0344
+  },
+  {
+    "region": 1,
+    "mean": "#A8674D",
+    "share": 0.2224
+  },
+  {
+    "region": 2,
+    "mean": "#929292",
+    "share": 0.0403
+  },
+  {
+    "region": 3,
+    "mean": "#797979",
+    "share": 0.1834
+  },
+  {
+    "region": 4,
+    "mean": "#535353",
+    "share": 0.0635
+  },
+  {
+    "region": 5,
+    "mean": "#5B5B5B",
+    "share": 0.1409
+  },
+  {
+    "region": 6,
+    "mean": "#A7A7A7",
+    "share": 0.1779
+  },
+  {
+    "region": 7,
+    "mean": "#ACACAC",
+    "share": 0.1084
+  },
+  {
+    "region": 8,
+    "mean": "#BCBCBC",
+    "share": 0.0288
+  }
+]

@@ -40,7 +40,7 @@ describe("brand lineup", () => {
           const regions = m.regions[src.material]!;
           expect(src.region, part.id).toBeLessThan(regions.length);
           // The default color is the region's own mean: an untouched part renders as scanned.
-          expect(part.default.color, part.id).toBe(regions[src.region]!.mean);
+          expect(src.color ?? part.default.color, part.id).toBe(regions[src.region]!.mean);
           expect(existsSync(`public/models/${product.id}/${safe(src.material)}/mask-${Math.floor(src.region / 3)}.png`)).toBe(true);
         }
       });

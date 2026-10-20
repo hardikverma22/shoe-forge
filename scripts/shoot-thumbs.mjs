@@ -5,7 +5,7 @@ import { chromium } from "playwright";
 import sharp from "sharp";
 
 const [base, ...ids] = process.argv.slice(2);
-const list = ids.length ? ids : ["air-force-1", "air-jordan-1", "dunk-low", "superstar", "gazelle", "puma-suede", "old-skool", "chuck-taylor", "forge-runner"];
+const list = ids.length ? ids : ["air-force-1", "air-jordan-1", "dunk-low", "gazelle", "puma-suede", "old-skool", "chuck-taylor", "forge-runner"];
 await mkdir("public/shoes", { recursive: true });
 const browser = await chromium.launch({ channel: "chrome", args: ["--use-angle=metal", "--enable-gpu"] });
 const page = await browser.newPage({ viewport: { width: 1400, height: 900 }, deviceScaleFactor: 1.5 });

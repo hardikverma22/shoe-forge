@@ -34,29 +34,6 @@ export const SHOES = [
     masks: {},
   },
   {
-    id: "superstar",
-    uid: "7ea0ff1d54af4209bac2921ee37110b6",
-    keep: /.*/,
-    masks: {
-      superstar: {
-        // 6 clusters keep leather highlights (slate, dark gray) apart from the white stripes; they fold back into the upper.
-        k: 6,
-        merge: "0+4+3,1+5",
-        attr: true,
-        // The scan bakes stripes, rubber sidewall, shell toe and lining into the same tones: split them by atlas area.
-        boxes: [
-          "0.14,0,0.2,0.12;0.19,0,0.355,0.73;0.35,0,0.42,0.24;0.43,0,0.75,0.17;0,0.72,0.13,0.98;0.24,0.82,0.29,0.97;0,0.86,1,1=1+2+5:shell",
-          // The sidewall islands are rubber whatever their dirt, and so is everything this low on the shoe.
-          "0.2,0,0.355,0.73=0+1+2+3+4+5:shell",
-          "h0-0.22=0+1+2+3+4+5:shell",
-          // The printed sockliner.
-          "0.55,0.38,0.98,0.72=0+1+2+3+4+5:lining",
-        ],
-        minArea: 0.0004,
-      },
-    },
-  },
-  {
     id: "puma-suede",
     uid: "5b098581cb7040d8ba30955ddf2e04c8",
     keep: /.*/,
@@ -82,9 +59,28 @@ export const SHOES = [
   },
   {
     id: "old-skool",
-    uid: "5f8241541e7846af869b6bb0ceb72adf",
-    keep: /.*/,
-    masks: { Default_OBJ: { k: 6, merge: "0+5,1+4", minArea: 0.0004 } },
+    // A CG mockup of a pair (kanesk06). Keep the right shoe; the laces mesh covers both, so clip it.
+    uid: "8d8cecbddb7a4d7b8be72c5e3ec86c72",
+    keep: /^Object_[456]$/,
+    clipX: (x) => x > 0,
+    materialPerMesh: { Object_4: "upper", Object_5: "sole", Object_6: "laces" },
+    masks: {
+      upper: {
+        k: 6,
+        merge: "0+2+3+4+5",
+        boxes: [
+          "0,0,0.11,0.41=0+2+3+4+5:A",
+          "0,0.4,0.45,1=0+2+3+4+5:B",
+          "0.55,0.19,0.81,0.49=0+2+3+4+5:C",
+          "0.51,0.48,0.82,1=0+2+3+4+5:D",
+          "0.8,0,1,0.9=0+2+3+4+5:E",
+          "0.1,0,0.35,0.6=0+2+3+4+5:F",
+          // The jazz stripe: the light shapes inside the quarters island.
+          "0.05,0.45,0.42,0.9=3:stripe",
+        ],
+        minArea: 0.0003,
+      },
+    },
   },
   {
     id: "air-force-1",

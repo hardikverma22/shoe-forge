@@ -58,25 +58,40 @@ export function CameraRig({ product, enabled = true }: { product: ProductDef; en
   useEffect(() => {
     const selected = useStudioUI.getState().selectedPart;
     if (!focusNonce || !selected || !layout) return;
+    const preset = product.cameraViews.find((v) => v.id === product.parts.find((p) => p.id === selected)?.view);
+    if (preset) {
+      flyTo(preset.position, [0, 0, 0]);
+      return;
+    }
     const c = layout.partCenters[selected];
     if (!c) return;
-    // Swing toward the part's side, blended with the current angle so the move stays short,
-    // and stay far enough back that the whole shoe remains in frame.
-    const toPart = new THREE.Vector3(...c);
-    if (toPart.lengthSq() < 1e-4) toPart.set(0, 0.3, 1);
     const current = camera.position
       .clone()
       .sub(controls.current?.target ?? new THREE.Vector3())
       .normalize();
-    const dir = toPart
-      .normalize()
-      .multiplyScalar(0.55)
-      .add(current.multiplyScalar(0.45))
-      .normalize();
-    dir.y = Math.max(dir.y, 0.12);
-    const pos = dir.normalize().multiplyScalar(2.6);
-    // Keep the shoe centered; only bias the target a little toward the part.
-    flyTo([pos.x, pos.y, pos.z], [c[0] * 0.35, c[1] * 0.35, c[2] * 0.35]);
+    const f = useSceneMeta.getState().facings?.[selected];
+    const facing = f ? new THREE.Vector3(...f) : null;
+    if (facing && facing.length() > 0.3) {
+      // A part that faces one way (a sole, the laces, a heel patch) is seen from that side, even
+      // from underneath, with a little of the current angle kept so the move feels continuous.
+      // Only a part that clearly faces the floor (a sole, a tread) is worth looking at from below;
+      // a sidewall that also wraps a little underneath is seen from above.
+      const fromBelow = facing.y < -0.5;
+      const dir = facing.normalize().multiplyScalar(0.8).add(current.multiplyScalar(0.2)).normalize();
+      if (!fromBelow) dir.y = Math.max(dir.y, 0.12);
+      const pos = dir.normalize().multiplyScalar(2.6);
+      flyTo([pos.x, pos.y, pos.z], [c[0] * 0.25, c[1] * 0.25, c[2] * 0.25]);
+      return;
+    }
+    // A part that wraps around the shoe (an upper, both quarters) has no best side: keep the
+    // current angle and just settle at a comfortable three-quarter height, centered.
+    // Looking straight at the toe or heel shows little of such a part, so ease out to three-quarters.
+    let az = Math.atan2(current.z, current.x);
+    if (Math.abs(Math.sin(az)) < 0.55) az = Math.sign(Math.cos(az) || 1) > 0 ? Math.sign(az || 1) * 0.85 : Math.sign(az || 1) * (Math.PI - 0.85);
+    const y = Math.min(0.5, Math.max(0.18, current.y));
+    const r = Math.sqrt(1 - y * y);
+    const pos = new THREE.Vector3(Math.cos(az) * r, y, Math.sin(az) * r).multiplyScalar(2.6);
+    flyTo([pos.x, pos.y, pos.z], [0, 0, 0]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focusNonce, layout]);
 

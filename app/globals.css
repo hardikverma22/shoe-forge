@@ -18,7 +18,7 @@
   --night: #0a0a12;
   --sheet: #ffffff;
   --on-cobalt-2: #c9ccff;
-  --on-night-2: #a9acd2;
+  --on-night-2: #a7a7ad;
   /* the photo sweep: a neutral studio backdrop so the shoe carries the color */
   --sweep: #e6e7ea;
   --sweep-hi: #f7f7f8;
@@ -28,17 +28,17 @@
   /* studio, light */
   --paper: #e9eaee;
   --surface: #ffffff;
-  --surface-2: #f5f6fc;
+  --surface-2: #f5f5f4;
   --ink: #0a0a12;
-  --ink-muted: #4b4f6e;
-  --line: #d3d6ea;
+  --ink-muted: #55565d;
+  --line: #dadadd;
   --line-strong: #0a0a12;
-  --accent: #1e2bff;
+  --accent: #0a0a12;
   --accent-ink: #ffffff;
   --select: #d7ff3a;
   --select-ink: #0a0a12;
   --danger: #d9321a;
-  --grid: color-mix(in oklab, #1e2bff 7%, transparent);
+  --grid: color-mix(in oklab, #0a0a12 6%, transparent);
   --studio-hi: #fbfbfc;
   --studio-lo: #d9dbe0;
   color-scheme: light;
@@ -48,38 +48,38 @@
 .force-light {
   --paper: #e9eaee;
   --surface: #ffffff;
-  --surface-2: #f5f6fc;
+  --surface-2: #f5f5f4;
   --ink: #0a0a12;
-  --ink-muted: #4b4f6e;
-  --line: #d3d6ea;
+  --ink-muted: #55565d;
+  --line: #dadadd;
   --line-strong: #0a0a12;
-  --accent: #1e2bff;
+  --accent: #0a0a12;
   --accent-ink: #ffffff;
   --select: #d7ff3a;
   --select-ink: #0a0a12;
   --danger: #d9321a;
-  --grid: color-mix(in oklab, #1e2bff 7%, transparent);
+  --grid: color-mix(in oklab, #0a0a12 6%, transparent);
   --studio-hi: #fbfbfc;
   --studio-lo: #d9dbe0;
   color-scheme: light;
 }
 
 .dark {
-  --paper: #080912;
-  --surface: #11132a;
-  --surface-2: #171a36;
-  --ink: #f1f2ff;
-  --ink-muted: #a3a7d4;
-  --line: #262a52;
-  --line-strong: #f1f2ff;
-  --accent: #7a84ff;
-  --accent-ink: #080912;
+  --paper: #0b0b0d;
+  --surface: #151517;
+  --surface-2: #1c1c1f;
+  --ink: #f2f2f0;
+  --ink-muted: #a6a6ac;
+  --line: #2a2a2e;
+  --line-strong: #f2f2f0;
+  --accent: #d7ff3a;
+  --accent-ink: #0a0a12;
   --select: #d7ff3a;
   --select-ink: #0a0a12;
   --danger: #ff6a4d;
-  --grid: color-mix(in oklab, #7a84ff 9%, transparent);
-  --studio-hi: #22243a;
-  --studio-lo: #05060c;
+  --grid: color-mix(in oklab, #d7ff3a 6%, transparent);
+  --studio-hi: #242427;
+  --studio-lo: #060607;
   color-scheme: dark;
 }
 
@@ -230,7 +230,7 @@
   border: 1px solid var(--line);
   box-shadow:
     0 1px 0 color-mix(in oklab, var(--ink) 4%, transparent),
-    0 18px 40px -24px color-mix(in oklab, var(--cobalt) 35%, transparent);
+    0 18px 40px -24px color-mix(in oklab, var(--night) 30%, transparent);
 }
 
 /* Material swatch: a baked grayscale relief multiplied over the swatch color. */

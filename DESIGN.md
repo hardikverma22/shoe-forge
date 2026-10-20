@@ -20,7 +20,7 @@ colors:
   ink-muted: "#4b4f6e"
   line: "#d3d6ea"
   line-strong: "#0a0a12"
-  accent: "#1e2bff"
+  accent: "#0a0a12"
   accent-ink: "#ffffff"
   select: "#d7ff3a"
   select-ink: "#0a0a12"
@@ -33,8 +33,8 @@ colors:
   ink-dark: "#f1f2ff"
   ink-muted-dark: "#a3a7d4"
   line-dark: "#262a52"
-  accent-dark: "#7a84ff"
-  accent-ink-dark: "#080912"
+  accent-dark: "#d7ff3a"
+  accent-ink-dark: "#0a0a12"
   danger-dark: "#ff6a4d"
   studio-hi-dark: "#22243a"
   studio-lo-dark: "#05060c"
@@ -231,7 +231,7 @@ A printed-stock palette: neutral grounds (sweep, night, sheet, paper) with one s
 
 ### Primary
 - **Volt** (volt / select): the selection color. Active callout labels, leader lines and dots; the selected row in the parts rail and selected part chips; the part-number badge on the studio callout; the toured part's ring; success toasts; text selection; the focus ring on stock sections; the closing "Your pair is waiting." field; the 3D selection highlight on the home page and in the dark studio. Always paired with night text.
-- **Cobalt** (cobalt / accent, light theme): the studio's working accent. Primary buttons (Save, Open), focus rings, range-track fill, checked swatch rings, custom-color links, the loading bar, and the 3D selection highlight in the light studio. On the home page it is limited to small accents: the second headline line in the materials section, the discs behind the four marks in capabilities, the checked ring in the hero color tray. It is also the ground of the generated share card. Never a section ground on the home page.
+- **Accent** (accent): ink black (#0A0A12) in the light theme and volt (#D7FF3A) in the dark theme, chosen 2026-10-20 after the user rejected the cobalt blue. Primary buttons (Save, Next), links, focus rings, range fills and checked swatch rings use it. The 3D selection marker is signal orange (#FF4A1C) in light, volt in dark. Neutral greys carry no blue tint. Cobalt is no longer a UI color.
 
 ### Secondary
 - **Signal Orange** (signal): lives in the pair, not the interface. The default hero pair's lining and patent side stripes, a hero tray swatch, and the mesh sample in the swatch book. Code uses the literal value rather than the token.

@@ -41,8 +41,8 @@ A configurator driven by a typed product schema and real PBR materials (leather,
 ## Evidence on Hand
 
 - The Forge Runner model, seven texture sets, the original mark library and eight curated colorways (`lib/products/forge-runner.ts`).
-- Eight brand shoes with three or four real colorways each (`lib/products/lineup.ts`, built by `scripts/import-shoes.mjs` from `scripts/shoes.mjs`). Air Force 1 and Dunk Low are clean CG models (one material per part); the rest are photo scans whose parts are color regions of the texture.
-- Prefer CG models with one material per part over photo scans. Scans with shattered texture atlases (the old Samba) cannot be split into clean parts and were dropped.
+- Seven brand shoes with three or four real colorways each (`lib/products/lineup.ts`, built by `scripts/import-shoes.mjs` from `scripts/shoes.mjs`). Air Force 1, Dunk Low and Old Skool are clean CG models (one material or clean UV island per part); AJ1, Gazelle, PUMA Suede and Chuck Taylor are scans whose parts are color regions of the texture.
+- Prefer CG models with one material per part over photo scans. Scans with shattered texture atlases (the old Samba) cannot be split into clean parts and were dropped (Samba, Superstar, the old Old Skool scan).
 - No customers, testimonials, press or usage numbers exist. Do not invent them.
 
 ## Product Principles

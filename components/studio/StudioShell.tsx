@@ -32,7 +32,8 @@ import type { SurfaceEvent, SurfaceKind } from "@/components/three/ProductModel"
 
 const StudioCanvas = dynamic(() => import("@/components/three/StudioCanvas"), { ssr: false });
 
-const ACCENT = { light: "#1E2BFF", dark: "#D7FF3A" };
+// The 3D selection marker: warm signal orange reads on white and black leather alike.
+const ACCENT = { light: "#FF4A1C", dark: "#D7FF3A" };
 const DEFAULT_GRAPHIC_SCALE = 0.2;
 
 function describeFirstPart(product: NonNullable<ReturnType<typeof getProduct>>, design: { parts: Record<string, { material: string; color: string }> }) {

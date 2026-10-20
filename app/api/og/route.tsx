@@ -24,7 +24,7 @@ export async function GET(req: Request) {
         width: "100%",
         height: "100%",
         display: "flex",
-        background: "#1e2bff",
+        background: "#0a0a12",
         color: "#ffffff",
         padding: 64,
         fontFamily: "sans-serif",
@@ -64,7 +64,7 @@ export async function GET(req: Request) {
           >
             {name}
           </div>
-          <div style={{ display: "flex", fontSize: 30, color: "#c9ccff", marginTop: 24 }}>
+          <div style={{ display: "flex", fontSize: 30, color: "#a7a7ad", marginTop: 24 }}>
             A {product.name}, designed part by part.
           </div>
         </div>
@@ -104,11 +104,11 @@ export async function GET(req: Request) {
               borderTop: i === 0 ? "none" : "1px solid rgba(255,255,255,0.2)",
             }}
           >
-            <div style={{ display: "flex", width: 34, fontSize: 16, color: "#c9ccff" }}>
+            <div style={{ display: "flex", width: 34, fontSize: 16, color: "#a7a7ad" }}>
               {String(i + 1).padStart(2, "0")}
             </div>
             <div style={{ display: "flex", flex: 1, fontWeight: 700 }}>{p.label}</div>
-            <div style={{ display: "flex", fontSize: 18, color: "#c9ccff", marginRight: 14 }}>
+            <div style={{ display: "flex", fontSize: 18, color: "#a7a7ad", marginRight: 14 }}>
               {p.material}
             </div>
             <div

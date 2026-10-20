@@ -11,6 +11,7 @@ import { useStudioUI } from "@/lib/design/ui-store";
 import { MATERIALS } from "@/lib/materials/presets";
 import { FIT_SIZE } from "@/lib/three/layout";
 import { useSceneMeta } from "@/lib/three/scene-store";
+import { partFacing } from "@/lib/three/facing";
 import type { SurfaceEvent, SurfaceKind } from "./ProductModel";
 
 /**
@@ -319,7 +320,7 @@ export function TintModel({ product, design, interactive = true, gate, children,
       for (const s of slots) {
         const part = product.parts.find((p) => p.id === s.partId)!;
         if (part.source?.region !== undefined) {
-          const m = linear(part.default.color);
+          const m = linear(part.source.color ?? part.default.color);
           const c = std.color ?? new THREE.Color(1, 1, 1);
           means[s.index]!.set(m.r * c.r, m.g * c.g, m.b * c.b);
         }
@@ -392,6 +393,27 @@ export function TintModel({ product, design, interactive = true, gate, children,
     return out;
   }, [product.parts, entries, meshes]);
 
+  // Which way each part faces, so picking the outsole turns the camera underneath.
+  const facings = useMemo(() => {
+    const out: Record<string, [number, number, number]> = {};
+    const center = new THREE.Vector3();
+    for (const part of product.parts) {
+      const src = part.source;
+      const entry = src && entries.get(src.material);
+      if (!src || !entry) continue;
+      const geos = meshes.filter((m) => m.materialName === src.material).map((m) => m.geometry);
+      const weight =
+        src.region === undefined
+          ? undefined
+          : (g: THREE.BufferGeometry, i: number) => {
+              const uv = g.getAttribute("uv");
+              return uv ? weightAt(entry, uv.getX(i), uv.getY(i), src.region!) : 0;
+            };
+      out[part.id] = partFacing(geos, center, weight).toArray();
+    }
+    return out;
+  }, [product.parts, entries, meshes]);
+
   const rootRef = useRef<THREE.Group>(null);
   useEffect(() => {
     useSceneMeta.getState().setRoot(rootRef.current);
@@ -399,8 +421,12 @@ export function TintModel({ product, design, interactive = true, gate, children,
   useEffect(() => {
     useSceneMeta.getState().setAnchors(anchors);
     useSceneMeta.getState().setLayout({ scale: 1, offset: [0, 0, 0], floorY, partCenters: anchors });
-    return () => useSceneMeta.getState().setAnchors(null);
-  }, [anchors, floorY]);
+    useSceneMeta.getState().setFacings(facings);
+    return () => {
+      useSceneMeta.getState().setAnchors(null);
+      useSceneMeta.getState().setFacings(null);
+    };
+  }, [anchors, floorY, facings]);
 
   // Selection pulse.
   const pulses = useRef<Record<string, number>>({});
@@ -419,7 +445,8 @@ export function TintModel({ product, design, interactive = true, gate, children,
         const part = product.parts.find((p) => p.id === slot.partId)!;
         const cfg = design.parts[part.id];
         if (!cfg) continue;
-        const changedColor = cfg.color.toUpperCase() !== part.default.color.toUpperCase();
+        // "Untouched" means the model's own color, which a painted default may differ from.
+        const changedColor = cfg.color.toUpperCase() !== (part.source?.color ?? part.default.color).toUpperCase();
         const i = slot.index;
         const cur = entry.uniforms.uTarget.value[i]!;
         if (changedColor) {

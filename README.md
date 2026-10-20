@@ -1,6 +1,6 @@
 # Shoe Forge
 
-Design a sneaker part by part in real-time 3D. Pick a pair from the lineup (Air Force 1, Air Jordan 1, Dunk Low, Superstar, Gazelle, PUMA Suede, Old Skool, Chuck Taylor, or the original Forge Runner), click any part, give it a real material (leather, suede, knit, mesh, canvas, rubber, patent) and a color, add graphics or text on the surface, try curated colorways, and leave with a share link, a saved design, a PNG or the 3D model.
+Design a sneaker part by part in real-time 3D. Pick a pair from the lineup (Air Force 1, Air Jordan 1, Dunk Low, Gazelle, PUMA Suede, Old Skool, Chuck Taylor, or the original Forge Runner), click any part, give it a real material (leather, suede, knit, mesh, canvas, rubber, patent) and a color, add graphics or text on the surface, try curated colorways, and leave with a share link, a saved design, a PNG or the 3D model.
 
 Built with Next.js 16, React 19, three.js with React Three Fiber and drei, GSAP (ScrollTrigger and SplitText), Motion, Tailwind CSS 4 and Zustand with zundo for undo/redo.
 
@@ -46,5 +46,5 @@ Open http://localhost:3000. The lineup is at `/shoes`, and each shoe's studio at
 
 - Textures: [ambientCG](https://ambientcg.com), CC0 1.0.
 - Forge Runner 3D model: from the original Shoe Forge project. Confirm its license before commercial use.
-- Brand models (Sketchfab): kirilldrac78 (Air Force 1, Dunk Low), DeezVertz (Air Jordan 1), whiteboydime (Superstar), kzolozhkov (Gazelle), thesidekick (Old Skool), turbopurr (Chuck Taylor), all CC BY 4.0; Toni Escribano Llorente (PUMA Suede), CC BY-NC 4.0.
+- Brand models (Sketchfab): kirilldrac78 (Air Force 1, Dunk Low), DeezVertz (Air Jordan 1), kzolozhkov (Gazelle), kanesk06 (Old Skool), turbopurr (Chuck Taylor), all CC BY 4.0; Toni Escribano Llorente (PUMA Suede), CC BY-NC 4.0.
 - A fan project, not affiliated with, sponsored or endorsed by Nike, Jordan, adidas, PUMA, Vans or Converse.

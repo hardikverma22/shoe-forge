@@ -47,6 +47,7 @@ export const forgeRunner = ProductDef.parse({
     },
     {
       id: "lining",
+      view: "top",
       label: "Lining",
       meshName: "lining",
       allowedMaterials: ["mesh", "canvas", "knit"],
@@ -65,6 +66,7 @@ export const forgeRunner = ProductDef.parse({
     },
     {
       id: "stripes",
+      view: "side",
       label: "Side stripes",
       meshName: "stripes",
       allowedMaterials: ["leather", "suede", "patent"],

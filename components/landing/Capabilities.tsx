@@ -25,7 +25,7 @@ const ROWS = [
     demo: (
       <ul className="flex flex-wrap gap-3">
         {MARKS.map((m) => (
-          <li key={m} className="bg-cobalt grid size-20 place-items-center rounded-full">
+          <li key={m} className="bg-night grid size-20 place-items-center rounded-full">
             <Image
               src={`/marks/${m}.png`}
               alt={`${m} mark`}
