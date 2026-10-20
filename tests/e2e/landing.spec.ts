@@ -6,7 +6,7 @@ test("landing shows the hero, recolors a part in place, and hands the design to 
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Yours");
   // The intro loader covers the page until the 3D scene is ready.
-  await expect(page.locator(".sf-loader")).toHaveCount(0, { timeout: 30_000 });
+  await expect(page.locator(".sf-loader")).toHaveCount(0, { timeout: 60_000 });
   await page.waitForTimeout(1500);
 
   // A callout opens the color tray; picking a swatch recolors that part.

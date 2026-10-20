@@ -92,7 +92,7 @@ export function IntroLoader({ onReveal }: { onReveal: () => void }) {
     const onReady = () => (ready = true);
     window.addEventListener("sf:scene-ready", onReady);
     // No WebGL, or something failed: never hold the page hostage.
-    const giveUp = window.setTimeout(() => (ready = true), 12000);
+    const giveUp = window.setTimeout(() => (ready = true), 10000);
 
     const rows = Array.from(el.querySelectorAll<HTMLElement>("[data-row]"));
     const pins = Array.from(el.querySelectorAll<HTMLElement | SVGElement>("[data-pin]"));
@@ -142,16 +142,22 @@ export function IntroLoader({ onReveal }: { onReveal: () => void }) {
         .to(sheet.current, { yPercent: -100, duration: 1.05, ease: "expo.inOut" }, "<0.05");
     };
 
+    let last = start;
     const tick = (now: number) => {
       const t = (now - start) / 1000;
+      // Eased by elapsed time, not per frame: a weak GPU (or software WebGL) may only manage a
+      // few frames a second, and per-frame easing would then take forever to reach 100%.
+      const dt = Math.min(0.5, (now - last) / 1000);
+      last = now;
       // Downloads fill most of the mold; the last stretch is the scene compiling its shaders.
       // three.js counts finished files, not bytes (the model reads 0% until it lands), so a floor
       // creeps toward the download ceiling to keep the pour moving on a slow connection.
       const floor = 0.84 * (1 - Math.exp(-t / 4.5));
       const done = ready && now - start >= minMs;
       const target = done ? 1 : Math.min(0.96, Math.max(floor, rig.loadProgress * 0.86));
-      shown += (target - shown) * (done ? 0.14 : 0.05);
-      if (done && 1 - shown < 0.004) shown = 1;
+      shown += (target - shown) * (1 - Math.exp(-dt * (done ? 9 : 3)));
+      // Done means done within a moment, however slowly frames come.
+      if (done && (1 - shown < 0.004 || now - start > minMs + 1500)) shown = 1;
       render(shown);
       if (shown === 1) {
         exit();
