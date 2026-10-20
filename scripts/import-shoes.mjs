@@ -13,7 +13,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { mkdir, rename, writeFile } from "node:fs/promises";
 import { NodeIO } from "@gltf-transform/core";
 import { ALL_EXTENSIONS } from "@gltf-transform/extensions";
-import { metalRough, prune } from "@gltf-transform/functions";
+import { compactPrimitive, metalRough, prune } from "@gltf-transform/functions";
 import { MeshoptDecoder, MeshoptEncoder } from "meshoptimizer";
 import { SHOES } from "./shoes.mjs";
 
@@ -62,6 +62,9 @@ for (const shoe of SHOES.filter((s) => only.length === 0 || only.includes(s.id))
           if (shoe.clipX(cx / 3)) keepTris.push(idx.getScalar(t), idx.getScalar(t + 1), idx.getScalar(t + 2));
         }
         idx.setArray(new Uint32Array(keepTris));
+        // Drop the vertices nothing uses any more, or they still count in the bounds (an
+        // invisible second shoe would shift the model's center).
+        compactPrimitive(prim);
       }
     }
   }

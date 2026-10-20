@@ -80,6 +80,13 @@ export const SHOES = [
         ],
         minArea: 0.0003,
       },
+      // This mesh is the laces plus the whole inner liner and insole. The laces are the strip along
+      // the top of the texture and the rings beside it; the rest (liner) is left as modeled.
+      laces: {
+        k: 6,
+        merge: "0+1+2+3+4+5",
+        boxes: ["0,0,1,0.06;0.09,0.035,0.28,0.11=0+1+2+3+4+5:laces"],
+      },
     },
   },
   {
