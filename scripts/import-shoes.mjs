@@ -13,7 +13,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { mkdir, rename, writeFile } from "node:fs/promises";
 import { NodeIO } from "@gltf-transform/core";
 import { ALL_EXTENSIONS } from "@gltf-transform/extensions";
-import { metalRough, prune } from "@gltf-transform/functions";
+import { compactPrimitive, metalRough, prune } from "@gltf-transform/functions";
 import { MeshoptDecoder, MeshoptEncoder } from "meshoptimizer";
 import { SHOES } from "./shoes.mjs";
 
@@ -39,7 +39,40 @@ for (const shoe of SHOES.filter((s) => only.length === 0 || only.includes(s.id))
   const doc = await io.read(src);
   for (const node of doc.getRoot().listNodes()) {
     const mesh = node.getMesh();
-    if (mesh && !shoe.keep.test(mesh.getName())) node.setMesh(null);
+    // Match the mesh or its node: exporters name one or the other.
+    if (mesh && !shoe.keep.test(mesh.getName()) && !shoe.keep.test(node.getName())) node.setMesh(null);
+  }
+  // Models that come as a pair: drop the triangles of the other shoe from meshes shared by both
+  // (e.g. one laces mesh for the pair), by the world-space side of each triangle's center.
+  if (shoe.clipX) {
+    for (const node of doc.getRoot().listNodes()) {
+      const mesh = node.getMesh();
+      if (!mesh) continue;
+      const m = node.getWorldMatrix();
+      for (const prim of mesh.listPrimitives()) {
+        const pos = prim.getAttribute("POSITION"), idx = prim.getIndices();
+        if (!pos || !idx) continue;
+        const keepTris = [];
+        for (let t = 0; t + 2 < idx.getCount(); t += 3) {
+          let cx = 0;
+          for (let k = 0; k < 3; k++) {
+            const p = pos.getElement(idx.getScalar(t + k), []);
+            cx += m[0] * p[0] + m[4] * p[1] + m[8] * p[2] + m[12];
+          }
+          if (shoe.clipX(cx / 3)) keepTris.push(idx.getScalar(t), idx.getScalar(t + 1), idx.getScalar(t + 2));
+        }
+        idx.setArray(new Uint32Array(keepTris));
+        // Drop the vertices nothing uses any more, or they still count in the bounds (an
+        // invisible second shoe would shift the model's center).
+        compactPrimitive(prim);
+      }
+    }
+  }
+  // Models with one material for everything: give each mesh its own (named) material, so the
+  // upper, sole and laces become separate parts.
+  for (const [meshName, matName] of Object.entries(shoe.materialPerMesh ?? {})) {
+    const node = doc.getRoot().listNodes().find((n) => n.getMesh() && (n.getName() === meshName || n.getMesh().getName() === meshName));
+    for (const prim of node?.getMesh()?.listPrimitives() ?? []) prim.setMaterial(prim.getMaterial().clone().setName(matName));
   }
   // Scans are often exported "unlit"; light them like everything else. Without a roughness map
   // glTF defaults to fully metallic, which turns fabric into dark chrome.

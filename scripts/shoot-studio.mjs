@@ -1,7 +1,7 @@
 // Dev helper: screenshots each shoe in the studio.  node scripts/shoot-studio.mjs <baseUrl> <outDir> [id ...]
 import { chromium } from "playwright";
 const [base, out, ...ids] = process.argv.slice(2);
-const list = ids.length ? ids : ["air-force-1", "air-jordan-1", "dunk-low", "superstar", "gazelle", "puma-suede", "old-skool", "chuck-taylor"];
+const list = ids.length ? ids : ["air-force-1", "air-jordan-1", "dunk-low", "gazelle", "puma-suede", "old-skool", "chuck-taylor"];
 const browser = await chromium.launch({ channel: "chrome", args: ["--use-angle=metal", "--enable-gpu"] });
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 page.on("pageerror", (e) => console.log("pageerror", e.message));

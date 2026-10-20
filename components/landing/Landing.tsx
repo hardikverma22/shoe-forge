@@ -22,6 +22,7 @@ import { Colorways, colorwayAt, COLORWAY_COUNT } from "./Colorways";
 import { Capabilities } from "./Capabilities";
 import { Lineup } from "./Lineup";
 import { FinalCta } from "./FinalCta";
+import { IntroLoader } from "./IntroLoader";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -49,6 +50,16 @@ export function Landing() {
   const root = useRef<HTMLDivElement>(null);
   const lenis = useRef<Lenis | null>(null);
   const [reduced, setReduced] = useState(false);
+  // False while the intro loader covers the page: the hero's entrance and scrolling wait for it.
+  const [revealed, setRevealed] = useState(false);
+  const revealedRef = useRef(false);
+  const reveal = useCallback(() => {
+    revealedRef.current = true;
+    setRevealed(true);
+    window.scrollTo(0, 0);
+    lenis.current?.scrollTo(0, { immediate: true });
+    lenis.current?.start();
+  }, []);
   const ready = useSceneMeta((s) => s.layout !== null);
 
   useEffect(() => {
@@ -146,6 +157,7 @@ export function Landing() {
     if (!reduced) {
       const l = new Lenis({ autoRaf: false, lerp: 0.11, wheelMultiplier: 0.95 });
       lenis.current = l;
+      if (!revealedRef.current) l.stop();
       l.on("scroll", ScrollTrigger.update);
       tick = (time: number) => l.raf(time * 1000);
       gsap.ticker.add(tick);
@@ -188,8 +200,8 @@ export function Landing() {
     { scope: root, dependencies: [reduced] },
   );
 
-  // The shoe's entrance waits until the scene has compiled its shaders and uploaded its
-  // textures (the scene raises sf:scene-ready), so the first moving frames are smooth.
+  // The shoe's entrance waits for the intro loader to lift (sf:intro-go), which itself waits until
+  // the scene has compiled its shaders and uploaded its textures, so the first frames are smooth.
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       rig.intro = 1;
@@ -201,9 +213,9 @@ export function Landing() {
     const start = () => {
       tween = gsap.to(rig, { intro: 1, duration: 1.7, ease: "expo.out", delay: 0.05 });
     };
-    window.addEventListener("sf:scene-ready", start, { once: true });
+    window.addEventListener("sf:intro-go", start, { once: true });
     return () => {
-      window.removeEventListener("sf:scene-ready", start);
+      window.removeEventListener("sf:intro-go", start);
       tween?.kill();
     };
   }, []);
@@ -296,7 +308,8 @@ export function Landing() {
   );
 
   return (
-    <div ref={root} className="relative">
+    <div ref={root} className="relative" data-intro={revealed ? "go" : "wait"}>
+      <IntroLoader onReveal={reveal} />
       <div
         className="pointer-events-none fixed inset-0 z-10 transition-opacity duration-1000"
         style={{ opacity: ready ? 1 : 0 }}

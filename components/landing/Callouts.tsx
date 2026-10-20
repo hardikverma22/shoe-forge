@@ -333,7 +333,7 @@ export function Callouts() {
                   aria-label={`Color ${hex}`}
                   onClick={() => setHeroColor(selectedPart.id, hex)}
                   className={`border-night/15 aspect-square rounded-full border transition-transform duration-200 ease-[var(--ease-out-expo)] hover:scale-110 ${
-                    checked ? "ring-cobalt ring-offset-sheet ring-2 ring-offset-2" : ""
+                    checked ? "ring-night ring-offset-sheet ring-2 ring-offset-2" : ""
                   }`}
                   style={{ background: hex }}
                 />

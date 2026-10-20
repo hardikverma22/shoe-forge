@@ -10,7 +10,7 @@ test("the catalog filters by category and opens a brand shoe in the studio", asy
   await page.getByRole("link", { name: /Vans Old Skool/ }).click();
   await expect(page).toHaveURL(/\/studio\/old-skool/);
   await expect(page.getByRole("status")).toHaveCount(0, { timeout: 30_000 });
-  await expect(page.getByRole("link", { name: /3D model: thesidekick/ })).toBeVisible();
+  await expect(page.getByRole("link", { name: /3D model: kanesk06/ })).toBeVisible();
 });
 
 test("a brand shoe recolors a region with a named color, and takes a graphic", async ({ page }) => {

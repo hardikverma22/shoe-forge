@@ -34,6 +34,9 @@ export type PartConfig = z.infer<typeof PartConfig>;
 export const PartSource = z.object({
   material: z.string(),
   region: z.number().int().min(0).max(8).optional(),
+  /** The color the model itself shows here, when the design's default differs from it (a gray
+   *  mockup painted as a real colorway). Defaults to the part's default color. */
+  color: z.string().optional(),
 });
 export type PartSource = z.infer<typeof PartSource>;
 
@@ -49,6 +52,9 @@ export const PartDef = z.object({
   description: z.string(),
   /** Direction (model space) from the part's center to its most recognizable point; callouts point there. */
   anchor: Vec3.optional(),
+  /** Camera view (an id from cameraViews) to show when the part is picked. Without it the camera
+   *  turns to the side the part faces, underneath for soles (see lib/three/facing.ts). */
+  view: z.string().optional(),
 });
 export type PartDef = z.infer<typeof PartDef>;
 

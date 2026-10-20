@@ -12,6 +12,7 @@ import { applyMaterial, useMaterialMaps, useTextureCache } from "@/lib/materials
 import { MATERIALS } from "@/lib/materials/presets";
 import { computeLayout } from "@/lib/three/layout";
 import { useSceneMeta } from "@/lib/three/scene-store";
+import { partFacing } from "@/lib/three/facing";
 
 /** A copy of an attribute as plain floats (the optimizer stores positions and normals quantized). */
 function floatAttribute(
@@ -83,7 +84,7 @@ export function ProductModel({
   design,
   explode = 0,
   explodeRef,
-  accent = "#1E2BFF",
+  accent = "#FF4A1C",
   interactive = true,
   stagger = 0,
   spread = 0.75,
@@ -133,6 +134,10 @@ export function ProductModel({
     for (const g of Object.values(geometries)) minY = Math.min(minY, g.boundingBox?.min.y ?? Infinity);
     if (typeof window !== "undefined") (window as unknown as { __floor?: unknown }).__floor = { layout: layout.floorY, measured: minY };
     useSceneMeta.getState().setLayout(Number.isFinite(minY) ? { ...layout, floorY: minY } : layout);
+    const center = new THREE.Vector3();
+    const facings: Record<string, [number, number, number]> = {};
+    for (const [id, g] of Object.entries(geometries)) facings[id] = partFacing([g], center).toArray();
+    useSceneMeta.getState().setFacings(facings);
   }, [layout, geometries]);
 
   // One material per part, owned by us. The GLB's own materials are never mutated.

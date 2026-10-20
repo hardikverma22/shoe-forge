@@ -5,7 +5,9 @@ test("landing shows the hero, recolors a part in place, and hands the design to 
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Yours");
-  await page.waitForTimeout(3000);
+  // The intro loader covers the page until the 3D scene is ready.
+  await expect(page.locator(".sf-loader")).toHaveCount(0, { timeout: 30_000 });
+  await page.waitForTimeout(1500);
 
   // A callout opens the color tray; picking a swatch recolors that part.
   const upper = page.getByRole("button", { name: /^01 Upper/ });

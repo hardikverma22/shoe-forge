@@ -86,7 +86,7 @@ export function Materials() {
               <span className="split-line block">Seven materials.</span>
             </span>
             <span className="block overflow-hidden">
-              <span className="split-line text-cobalt block">Real surfaces.</span>
+              <span className="split-line text-night/40 block">Real surfaces.</span>
             </span>
           </h2>
           <p className="text-on-sweep-2 text-lg leading-snug">
