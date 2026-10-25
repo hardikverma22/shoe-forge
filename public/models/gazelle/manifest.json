@@ -16,17 +16,17 @@
       {
         "region": 1,
         "mean": "#2B5839",
-        "share": 0.4445
+        "share": 0.4501
       },
       {
         "region": 2,
         "mean": "#808377",
-        "share": 0.1624
+        "share": 0.1623
       },
       {
         "region": 3,
-        "mean": "#8B8473",
-        "share": 0.2597
+        "mean": "#8D8574",
+        "share": 0.2542
       }
     ]
   }

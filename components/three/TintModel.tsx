@@ -147,18 +147,34 @@ void main() {`,
   sfW[6] = sfC.r; sfW[7] = sfC.g; sfW[8] = sfC.b;
   vec3 sfBase = diffuseColor.rgb;
   float sfL = dot(sfBase, vec3(0.2126, 0.7152, 0.0722));
-  vec3 sfOut = sfBase;
+  // How much of this texel belongs to a recolored region. Where it is any, the untouched regions
+  // that share the texel (soft mask edges) show their own mean color too, not the raw texture,
+  // or the original hue leaks out as a line along every border (green welts on a navy Gazelle).
+  float sfOnW = 0.0;
+  float sfSum = 0.0;
   for (int i = 0; i < ${SLOTS}; i++) {
-    if (uOn[i] > 0.5 && sfW[i] > 0.002) {
+    sfSum += sfW[i];
+    if (uOn[i] > 0.5) sfOnW += sfW[i];
+  }
+  float sfTouch = smoothstep(0.0, 0.08, sfOnW);
+  // Weighted average of the regions; texels outside every mapped region keep the texture.
+  vec3 sfOut = sfBase * max(0.0, 1.0 - sfSum);
+  for (int i = 0; i < ${SLOTS}; i++) {
+    if (sfW[i] > 0.002) {
+      bool on = uOn[i] > 0.5;
+      if (!on && sfTouch == 0.0) {
+        sfOut += sfBase * sfW[i];
+        continue;
+      }
       float lm = max(dot(uMean[i], vec3(0.2126, 0.7152, 0.0722)), 0.0001);
       // Bright sources keep their shading by ratio; dark ones (black suede) keep it by difference.
       float ratio = clamp(sfL / lm, 0.2, 2.4);
       float detail = clamp(1.0 + (sfL - lm) / max(lm, 0.18) * 0.85, 0.3, 1.8);
-      vec3 rc = uTarget[i] * mix(detail, ratio, smoothstep(0.05, 0.28, lm));
-      sfOut = mix(sfOut, rc, sfW[i]);
+      vec3 rc = (on ? uTarget[i] : uMean[i]) * mix(detail, ratio, smoothstep(0.05, 0.28, lm));
+      sfOut += (on ? rc : mix(sfBase, rc, sfTouch)) * sfW[i];
     }
   }
-  diffuseColor.rgb = sfOut;`,
+  diffuseColor.rgb = sfOut / max(sfSum, 1.0);`,
       )
       .replace(
         "#include <roughnessmap_fragment>",

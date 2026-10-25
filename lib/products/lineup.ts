@@ -159,10 +159,12 @@ export const pumaSuede = ProductDef.parse({
   realLengthMeters: 0.29,
   parts: [
     { id: "upper", label: "Suede upper", source: { material: "material_0", region: 0 }, allowedMaterials: ["suede", "leather"], default: { material: "suede", color: "#DA4750" }, description: "Soft suede upper." },
-    { id: "formstrip", label: "Formstrip", source: { material: "material_0", region: 1 }, allowedMaterials: ["leather", "suede"], default: { material: "leather", color: "#DEC9BD" }, description: "The Formstrip on both sides." },
+    { id: "formstrip", label: "Formstrip", source: { material: "material_0", region: 1 }, allowedMaterials: ["leather", "suede"], default: { material: "leather", color: "#E2CCC0" }, description: "The Formstrip on both sides." },
     { id: "laces", label: "Laces", source: { material: "material_0", region: 3 }, allowedMaterials: ["canvas"], default: { material: "canvas", color: "#D21E39" }, description: "Fat laces." },
     { id: "sole", label: "Sole", source: { material: "material_0", region: 4 }, allowedMaterials: ["rubber"], default: { material: "rubber", color: "#DAC3B6" }, description: "The rubber cupsole." },
     { id: "lining", label: "Lining", source: { material: "material_0", region: 5 }, allowedMaterials: ["leather", "mesh"], default: { material: "leather", color: "#9D948B" }, description: "Inner lining and insole." },
+    // The scan's print is a washed-out cream; the default paints it the real gold foil.
+    { id: "logo", label: "PUMA print", view: "side", source: { material: "material_0", region: 6, color: "#E4B9A3" }, allowedMaterials: ["leather", "patent"], default: { material: "leather", color: "#C9A45A" }, description: "The foil PUMA Suede print on the side." },
   ],
   colors: NAMED_COLORS,
   palette: PALETTE,
@@ -272,7 +274,7 @@ export const gazelle = ProductDef.parse({
     { id: "upper", label: "Suede upper", source: { material: "material", region: 1 }, allowedMaterials: ["suede", "leather"], default: { material: "suede", color: "#2B5839" }, description: "Soft suede upper and tongue." },
     { id: "stripes", label: "Three Stripes and laces", source: { material: "material", region: 0 }, allowedMaterials: ["leather", "suede"], default: { material: "leather", color: "#B2B9C0" }, description: "Serrated Three Stripes, laces and heel trim." },
     { id: "lining", label: "Heel tab and lining", source: { material: "material", region: 2 }, allowedMaterials: ["leather", "suede"], default: { material: "leather", color: "#808377" }, description: "The pull tab, collar lining and insole." },
-    { id: "sole", label: "Sole", source: { material: "material", region: 3 }, allowedMaterials: ["rubber"], default: { material: "rubber", color: "#8B8473" }, description: "The rubber cupsole." },
+    { id: "sole", label: "Sole", source: { material: "material", region: 3 }, allowedMaterials: ["rubber"], default: { material: "rubber", color: "#8D8574" }, description: "The rubber cupsole." },
   ],
   colors: NAMED_COLORS,
   palette: PALETTE,
