@@ -52,6 +52,11 @@ export const SHOES = [
           "0.74,0,1,0.73=1+3+4+6:sole",
           // The white lining and the printed insole.
           "0,0.52,0.39,0.86;0.14,0.84,0.4,0.995;0.36,0.56,0.66,0.75=1+2+3+4+6:lining",
+          // The gold "PUMA Suede" print on the side and the woven tongue label: never recolored.
+          "0.315,0.27,0.362,0.355=1+3+4+6:logo!",
+          "0.432,0.372,0.501,0.426=0+1+2+3+4+5+6+7+8:label!",
+          // The black tag strip under the laces: only its black, so the lace paint around it recolors.
+          "0.43,0.32,0.51,0.372=2:label!",
         ],
         minArea: 0.0002,
       },
@@ -107,9 +112,10 @@ export const SHOES = [
         lw: 0.6,
         merge: "1+3+2,5+4+6",
         attr: true,
-        // The sole is everything low on the shoe. The laces share the stripes' white and curl every
-        // way, so they stay one part with the stripes.
-        boxes: ["h0-0.2=0+1+2+3+4+5+6:sole"],
+        // The sole is everything low on the shoe except the green suede itself: the scan bakes a
+        // rim of upper onto the sole's top edge, which would stay green under any color. The
+        // laces share the stripes' white and curl every way, so they stay one part with the stripes.
+        boxes: ["h0-0.2=0+2+4+5+6:sole"],
         minArea: 0.0002,
       },
     },

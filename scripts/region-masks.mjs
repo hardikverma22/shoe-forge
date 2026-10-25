@@ -16,7 +16,8 @@
 //    height on the shoe (0 = lowest, 1 = highest), e.g. a midsole that shares the upper's white.
 //    "u0.3-1" limits it by normal.y (-1 facing down, 1 facing up), e.g. laces on top of the
 //    foot vs stripes on the sides. Boxes ending in ":name" share one region with every other box
-//    of that name.
+//    of that name. A name ending in "!" (e.g. ":logo!") marks fine detail such as printed
+//    letters: those boxes are applied after the cleanup in step 2, which would erase thin strokes.
 // Writes:
 //   preview.png      each region painted in its mean color (to check the split)
 //   mask-<n>.png     regions 3n..3n+2 as R, G, B weights (soft edges). RGB only: browsers
@@ -48,6 +49,7 @@ const boxes = rest
       ups: parts.filter((r) => r.startsWith("u")).map((r) => r.slice(1).match(/^(-?[\d.]+)-(-?[\d.]+)$/).slice(1).map(Number)),
       clusters: list.split("+").map(Number),
       label: label ?? null,
+      detail: label?.endsWith("!") ?? false,
     };
   });
 // One region per box name (unnamed boxes get their own), in order of first appearance.
@@ -117,24 +119,29 @@ for (const group of merges) for (const j of group.slice(1)) clusterToRegion[j] =
 const used = [...new Set(clusterToRegion)].sort((a, b) => a - b);
 const regionIndex = new Map(used.map((r, i) => [r, i]));
 let ids = new Uint8Array(N);
+const clusterOf = new Uint8Array(N);
+function inBox(b, i) {
+  const x = (i % info.width) / info.width, y = Math.floor(i / info.width) / info.height;
+  // No rects means the whole texture (a height-only box).
+  let inside = !b.rects.length || b.rects.some(([x0, y0, x1, y1]) => x >= x0 && x <= x1 && y >= y0 && y <= y1);
+  if (inside && (b.heights.length || b.ups.length)) {
+    if (!attr) throw new Error("A height or normal box needs --attr");
+    const h = attr[i * 3] / 255;
+    const up = (attr[i * 3 + 1] / 255) * 2 - 1;
+    inside =
+      attr[i * 3 + 2] > 0 &&
+      (!b.heights.length || b.heights.some(([lo, hi]) => h >= lo && h <= hi)) &&
+      (!b.ups.length || b.ups.some(([lo, hi]) => up >= lo && up <= hi));
+  }
+  return inside && b.clusters.includes(clusterOf[i]);
+}
 for (let i = 0; i < N; i++) {
   let best = 0, bd = Infinity;
   centers.forEach((c, j) => { const d = d2(i, c); if (d < bd) { bd = d; best = j; } });
+  clusterOf[i] = best;
   ids[i] = regionIndex.get(clusterToRegion[best]);
-  const x = (i % info.width) / info.width, y = Math.floor(i / info.width) / info.height;
   boxes.forEach((b, bi) => {
-    // No rects means the whole texture (a height-only box).
-    let inside = !b.rects.length || b.rects.some(([x0, y0, x1, y1]) => x >= x0 && x <= x1 && y >= y0 && y <= y1);
-    if (inside && (b.heights.length || b.ups.length)) {
-      if (!attr) throw new Error("A height or normal box needs --attr");
-      const h = attr[i * 3] / 255;
-      const up = (attr[i * 3 + 1] / 255) * 2 - 1;
-      inside =
-        attr[i * 3 + 2] > 0 &&
-        (!b.heights.length || b.heights.some(([lo, hi]) => h >= lo && h <= hi)) &&
-        (!b.ups.length || b.ups.some(([lo, hi]) => up >= lo && up <= hi));
-    }
-    if (inside && b.clusters.includes(best)) ids[i] = used.length + boxRegion[bi];
+    if (!b.detail && inBox(b, i)) ids[i] = used.length + boxRegion[bi];
   });
 }
 
@@ -185,6 +192,19 @@ if (MIN_AREA > 0) {
       for (let q = 0; q < R; q++) if (q !== r && border[q] > bc) { bc = border[q]; best = q; }
       for (const i of members) ids[i] = best;
     }
+  }
+}
+
+// Detail boxes go on last, pixel by pixel. Inside their rects the cleanup is undone too, so the
+// gaps between letters keep their own color instead of the one the filter smeared over them.
+const rawRegion = (i) => regionIndex.get(clusterToRegion[clusterOf[i]]);
+for (const [bi, b] of boxes.entries()) {
+  if (!b.detail) continue;
+  for (let i = 0; i < N; i++) {
+    const x = (i % W) / W, y = Math.floor(i / W) / H;
+    if (!b.rects.some(([x0, y0, x1, y1]) => x >= x0 && x <= x1 && y >= y0 && y <= y1)) continue;
+    if (inBox(b, i)) ids[i] = used.length + boxRegion[bi];
+    else if (ids[i] < used.length) ids[i] = rawRegion(i);
   }
 }
 

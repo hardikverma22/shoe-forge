@@ -2,31 +2,41 @@
   {
     "region": 0,
     "mean": "#DA4750",
-    "share": 0.4685
+    "share": 0.4669
   },
   {
     "region": 1,
-    "mean": "#DEC9BD",
-    "share": 0.0578
+    "mean": "#E2CCC0",
+    "share": 0.051
   },
   {
     "region": 2,
-    "mean": "#131313",
-    "share": 0.0299
+    "mean": "#121212",
+    "share": 0.029
   },
   {
     "region": 3,
     "mean": "#D21E39",
-    "share": 0.0274
+    "share": 0.0271
   },
   {
     "region": 4,
     "mean": "#DAC3B6",
-    "share": 0.2492
+    "share": 0.2534
   },
   {
     "region": 5,
     "mean": "#9D948B",
     "share": 0.1673
+  },
+  {
+    "region": 6,
+    "mean": "#E4B9A3",
+    "share": 0.0007
+  },
+  {
+    "region": 7,
+    "mean": "#8C928A",
+    "share": 0.0047
   }
 ]
