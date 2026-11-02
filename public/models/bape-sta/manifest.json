@@ -1,0 +1,53 @@
+{
+  "meshes": [
+    {
+      "node": "Plane.002_Material.004_0",
+      "mesh": "Plane.002_Material.004_0",
+      "material": "Material.004"
+    },
+    {
+      "node": "Plane.002_Material.007_0",
+      "mesh": "Plane.002_Material.007_0",
+      "material": "Material.007"
+    },
+    {
+      "node": "Plane.001_Material.010_0",
+      "mesh": "Plane.001_Material.010_0",
+      "material": "Material.010"
+    },
+    {
+      "node": "Plane.001_Material.011_0",
+      "mesh": "Plane.001_Material.011_0",
+      "material": "Material.011"
+    },
+    {
+      "node": "Plane.003_Material.006_0",
+      "mesh": "Plane.003_Material.006_0",
+      "material": "Material.006"
+    },
+    {
+      "node": "Plane.005_Material_0",
+      "mesh": "Plane.005_Material_0",
+      "material": "Material"
+    }
+  ],
+  "regions": {
+    "Material.010": [
+      {
+        "region": 0,
+        "mean": "#020202",
+        "share": 0.2415
+      },
+      {
+        "region": 1,
+        "mean": "#EFEFEF",
+        "share": 0.1598
+      },
+      {
+        "region": 2,
+        "mean": "#3C3C3C",
+        "share": 0.5987
+      }
+    ]
+  }
+}

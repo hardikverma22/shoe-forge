@@ -37,6 +37,10 @@ export const PartSource = z.object({
   /** The color the model itself shows here, when the design's default differs from it (a gray
    *  mockup painted as a real colorway). Defaults to the part's default color. */
   color: z.string().optional(),
+  /** Other materials, or regions of them, that belong to this part and follow its color and
+   *  finish (a stitch line modeled as its own piece, a tread painted on the upper's texture).
+   *  `color` is a region's own mean (see the manifest). */
+  also: z.array(z.object({ material: z.string(), region: z.number().int().min(0).max(8).optional(), color: z.string().optional() })).optional(),
 });
 export type PartSource = z.infer<typeof PartSource>;
 
@@ -83,7 +87,7 @@ export type ColorwayPreset = z.infer<typeof ColorwayPreset>;
 export const NamedColor = z.object({ hex: Hex, name: z.string() });
 export type NamedColor = z.infer<typeof NamedColor>;
 
-export const CATEGORIES = ["Running", "Basketball", "Court", "Skate", "Terrace", "Canvas"] as const;
+export const CATEGORIES = ["Running", "Basketball", "Court", "Skate", "Terrace", "Canvas", "Boot"] as const;
 
 export const ProductDef = z.object({
   id: z.string(),

@@ -85,12 +85,13 @@ export const SHOES = [
         ],
         minArea: 0.0003,
       },
-      // This mesh is the laces plus the whole inner liner and insole. The laces are the strip along
-      // the top of the texture and the rings beside it; the rest (liner) is left as modeled.
+      // This mesh is the laces, the inner liner and insole, and the cells of the waffle tread
+      // (cluster 1, the brown of the shared texture). The laces are the strip along the top of
+      // the texture and the rings beside it.
       laces: {
         k: 6,
-        merge: "0+1+2+3+4+5",
-        boxes: ["0,0,1,0.06;0.09,0.035,0.28,0.11=0+1+2+3+4+5:laces"],
+        merge: "0+2+3+4+5",
+        boxes: ["0,0,1,0.06;0.09,0.035,0.28,0.11=0+2+3+4+5:laces"],
       },
     },
   },
@@ -118,6 +119,48 @@ export const SHOES = [
         boxes: ["h0-0.2=0+2+4+5+6:sole"],
         minArea: 0.0002,
       },
+    },
+  },
+  {
+    id: "timberland-6-inch",
+    // A clean CG boot (kidondrej): every part is its own flat material.
+    uid: "09f7acbc30344c2cb5604cab2ac0b78b",
+    // The stitches alone are 330k vertices.
+    simplify: 0.0004,
+    keep: /.*/,
+    // The nubuck and the collar leather are exported as metal.
+    nonMetal: ["base_leather", "black_leather"],
+    matte: ["base_leather", "tongue"],
+    masks: {},
+  },
+  {
+    id: "forum-buckle",
+    // A clean CG Bad Bunny Forum Buckle Low (camilooh): 23 flat materials, no textures to split.
+    uid: "08d3b741a78846f2be6ce1db5671863d",
+    keep: /.*/,
+    masks: {},
+  },
+  {
+    id: "bape-sta",
+    uid: "8c078a184d4445368ca5b1a7f2720a68",
+    // Plane.004 and Plane (Material.009) are the scene's floor and backdrop.
+    keep: /^(?!Plane\.004|Plane_Material\.009)/,
+    // The upper is one flat-painted texture: gray base, black patent overlays, white panels.
+    masks: { "Material.010": { k: 3 } },
+  },
+  {
+    id: "air-max-90",
+    uid: "d488199cd7e540cf9e99cff339af540d",
+    // 581k triangles: simplified within 0.04% of its size, which the eye can't see at studio distance.
+    simplify: 0.0004,
+    // The see-through plate under the Air unit only shows as a gray film.
+    keep: /^(?!Plane\.035)/,
+    masks: {
+      Sole: { k: 3 },
+      Tounge: { k: 2 },
+      Inner: { k: 2 },
+      // Two grays: the suede mudguard and the lighter Swoosh and side panels.
+      Leather_Mat_1: { k: 2 },
     },
   },
 ];

@@ -80,6 +80,10 @@ for (const shoe of SHOES.filter((s) => only.length === 0 || only.includes(s.id))
   for (const mat of doc.getRoot().listMaterials()) {
     if (!mat.getMetallicRoughnessTexture()) mat.setMetallicFactor(0).setRoughnessFactor(Math.max(0.75, mat.getRoughnessFactor()));
   }
+  // Some models mark leather as metal, which renders it as polished brass.
+  for (const mat of doc.getRoot().listMaterials()) if (shoe.nonMetal?.includes(mat.getName())) mat.setMetallicFactor(0);
+  // ...and some give nubuck or suede a glossy roughness map. Those are fully rough.
+  for (const mat of doc.getRoot().listMaterials()) if (shoe.matte?.includes(mat.getName())) mat.setMetallicRoughnessTexture(null).setMetallicFactor(0).setRoughnessFactor(1);
   // Parts are materials: tag each with its name so the optimizer never merges two that look alike.
   for (const mat of doc.getRoot().listMaterials()) mat.setExtras({ ...mat.getExtras(), part: mat.getName() });
   // three.js no longer reads spec-gloss materials; convert them to metal-rough.
@@ -118,7 +122,7 @@ for (const shoe of SHOES.filter((s) => only.length === 0 || only.includes(s.id))
   await io.write(tmp, doc);
   execFileSync(
     "npx",
-    ["gltf-transform", "optimize", tmp, `public/models/${shoe.id}.glb`, "--compress", "meshopt", "--texture-compress", "webp", "--texture-size", "1024", "--join", "false", "--instance", "false", "--palette", "false", "--prune-attributes", "false", "--simplify", "false"],
+    ["gltf-transform", "optimize", tmp, `public/models/${shoe.id}.glb`, "--compress", "meshopt", "--texture-compress", "webp", "--texture-size", "1024", "--join", "false", "--instance", "false", "--palette", "false", "--prune-attributes", "false", ...(shoe.simplify ? ["--simplify", "true", "--simplify-error", String(shoe.simplify)] : ["--simplify", "false"])],
     { stdio: "inherit" },
   );
 

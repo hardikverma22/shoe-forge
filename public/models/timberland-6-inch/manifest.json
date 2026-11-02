@@ -1,0 +1,75 @@
+{
+  "meshes": [
+    {
+      "node": "Object_2",
+      "mesh": "Object_0",
+      "material": "SOLE"
+    },
+    {
+      "node": "Object_3",
+      "mesh": "Object_1",
+      "material": "SOLE2"
+    },
+    {
+      "node": "Object_4",
+      "mesh": "Object_2",
+      "material": "base_leather"
+    },
+    {
+      "node": "Object_5",
+      "mesh": "Object_3",
+      "material": "black_leather"
+    },
+    {
+      "node": "Object_6",
+      "mesh": "Object_4",
+      "material": "gold"
+    },
+    {
+      "node": "Object_7",
+      "mesh": "Object_5",
+      "material": "laces"
+    },
+    {
+      "node": "Object_8",
+      "mesh": "Object_6",
+      "material": "stiches1"
+    },
+    {
+      "node": "Object_9",
+      "mesh": "Object_7",
+      "material": "stiches2"
+    },
+    {
+      "node": "Object_10",
+      "mesh": "Object_8",
+      "material": "stiches2"
+    },
+    {
+      "node": "Object_11",
+      "mesh": "Object_9",
+      "material": "stiches2"
+    },
+    {
+      "node": "Object_12",
+      "mesh": "Object_10",
+      "material": "stiches2"
+    },
+    {
+      "node": "Object_13",
+      "mesh": "Object_11",
+      "material": "stiches2"
+    },
+    {
+      "node": "Object_14",
+      "mesh": "Object_12",
+      "material": "stiches2"
+    },
+    {
+      "node": "Object_15",
+      "mesh": "Object_13",
+      "material": "tongue"
+    }
+  ],
+  "regions": {}
+}

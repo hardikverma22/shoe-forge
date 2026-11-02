@@ -116,6 +116,16 @@ export function Stage({ stage, shadows = true }: { stage: StageId; shadows?: boo
           rotation-x={-Math.PI / 3}
           scale={[8, 2, 1]}
         />
+        {/* A softbox straight under the shoe: only surfaces facing down see it, so the outsole
+            reads its true color in the sole view (a white sole was a dim gray) and the upper is
+            unchanged. */}
+        <Lightformer
+          form="rect"
+          intensity={cfg.bounce * 2.5}
+          position={[0, -5, 0]}
+          rotation-x={-Math.PI / 2}
+          scale={[6, 4, 1]}
+        />
       </Environment>
       <directionalLight position={[2.5, 4, 3]} intensity={cfg.keyIntensity} color={cfg.key} />
       {shadows ? (

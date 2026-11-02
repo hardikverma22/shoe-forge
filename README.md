@@ -39,7 +39,7 @@ and leave with a share link, a saved design, a high-resolution render or the 3D 
 ## Overview
 
 Shoe Forge is a sneaker configurator in the spirit of Nike By You, built as a side project. It
-renders eight shoes in real time with physically based materials, lets you restyle every part,
+renders twelve shoes in real time with physically based materials, lets you restyle every part,
 and keeps everything in the browser: there is no account, no backend database and no checkout.
 A whole design fits in a URL.
 
@@ -117,8 +117,12 @@ Two kinds of 3D models live side by side:
 | <img src="public/shoes/dunk-low.webp" width="120" alt=""> | Dunk Low | Nike | Court | 10 | CG, one material per part |
 | <img src="public/shoes/gazelle.webp" width="120" alt=""> | Gazelle | adidas | Terrace | 4 | Photo scan, color regions |
 | <img src="public/shoes/puma-suede.webp" width="120" alt=""> | Suede Classic | PUMA | Court | 5 | Photo scan, color regions |
-| <img src="public/shoes/old-skool.webp" width="120" alt=""> | Old Skool | Vans | Skate | 8 | CG mockup, UV-island regions |
+| <img src="public/shoes/old-skool.webp" width="120" alt=""> | Old Skool | Vans | Skate | 9 | CG mockup, UV-island regions |
 | <img src="public/shoes/chuck-taylor.webp" width="120" alt=""> | Chuck Taylor All Star High | Converse | Canvas | 8 | Photo scan, one material per part |
+| <img src="public/shoes/air-max-90.webp" width="120" alt=""> | Air Max 90 | Nike | Running | 15 | CG, materials plus color regions |
+| <img src="public/shoes/forum-buckle.webp" width="120" alt=""> | Forum Buckle Low | adidas | Basketball | 16 | CG, one material per part |
+| <img src="public/shoes/bape-sta.webp" width="120" alt=""> | BAPE STA | A Bathing Ape | Court | 8 | CG, materials plus color regions |
+| <img src="public/shoes/timberland-6-inch.webp" width="120" alt=""> | 6-Inch Premium Boot | Timberland | Boot | 9 | CG, one material per part |
 | <img src="public/shoes/forge-runner.webp" width="120" alt=""> | Forge Runner | Shoe Forge | Running | 8 | Built, one mesh per part |
 
 ## Screenshots
@@ -231,7 +235,10 @@ separate object. Shoe Forge makes those parts editable without repainting the te
    from.
 
 CG models with one material per part skip the masks and recolor whole materials with the same
-shader.
+shader. A part can also own stray pieces (`source.also`): a stitch line modeled as its own
+material, or a tread that lives in another mesh's texture. Picked colors are lifted onto a
+physical albedo floor (`lib/materials/albedo.ts`), so black renders as black leather with its
+folds visible rather than as a flat silhouette.
 
 ## Tech stack
 
@@ -288,20 +295,25 @@ cp .env.example .env.local
 | `node scripts/bake-swatches.mjs` | Bakes the lit material swatches used across the site |
 | `node scripts/trace-silhouette.mjs <image>` | Traces a shoe render into SVG paths (used by the intro loader) |
 | `node scripts/qa/region-map.mjs <url> <out> <id>` | Paints every part a different color and shoots four views, to check part separation |
+| `node scripts/qa/sweep.mjs <url> <out> [id ...]` | Stress-tests recoloring on every shoe: leaks, crushed blacks, gray whites, empty parts, blown finishes; writes contact sheets and a report |
 
 ## Adding a shoe
 
 1. Find a downloadable model on Sketchfab under CC BY. Prefer CG models with one material per part
    over photo scans: scans with fragmented texture layouts cannot be split into clean parts.
 2. Add an entry to `scripts/shoes.mjs` with the model's id, which meshes to keep, and the mask
-   settings for any textured material.
+   settings for any textured material. `scripts/qa/inspect-glb.mjs` and
+   `scripts/qa/texture-sheet.mjs` show what a download contains; `nonMetal` fixes leather that
+   the model exports as metal.
 3. Run `node scripts/import-shoes.mjs <id>`. It writes the optimized model, the masks and a
    `manifest.json` listing materials and region colors.
 4. Add the product to `lib/products/lineup.ts`: parts (each a material or a region), allowed
    materials, default colors from the manifest, camera views and researched colorways.
-5. Check it with `node scripts/qa/region-map.mjs`, render its thumbnail with
-   `scripts/shoot-thumbs.mjs`, and run `npm test`. The lineup test verifies every part against the
-   model's manifest and mask files.
+   `scripts/qa/stub-parts.mjs` drafts one part per material with its average color.
+5. Check it with `node scripts/qa/region-map.mjs`, then `node scripts/qa/sweep.mjs <url> <out> <id>`
+   and read its sheets. Render its thumbnail with `scripts/shoot-thumbs.mjs`, and run `npm test`.
+   The lineup test verifies every part against the model's manifest and mask files, and that no
+   material or sizable region is left without a part.
 
 ## Project structure
 

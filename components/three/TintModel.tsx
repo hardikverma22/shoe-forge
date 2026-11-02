@@ -5,9 +5,10 @@ import * as THREE from "three";
 import { useEffect, useMemo, useRef, type ReactNode } from "react";
 import { useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
 import { useGLTF, useTexture } from "@react-three/drei";
-import type { ProductDef } from "@/lib/products/schema";
+import type { PartDef, ProductDef } from "@/lib/products/schema";
 import type { Design } from "@/lib/design/types";
 import { useStudioUI } from "@/lib/design/ui-store";
+import { albedo } from "@/lib/materials/albedo";
 import { MATERIALS } from "@/lib/materials/presets";
 import { FIT_SIZE } from "@/lib/three/layout";
 import { useSceneMeta } from "@/lib/three/scene-store";
@@ -27,7 +28,8 @@ const PER_MASK = 3;
 const safe = (s: string) => s.replace(/[^a-z0-9_-]/gi, "_");
 const linear = (hex: string) => new THREE.Color(hex);
 
-type Slot = { partId: string; index: number };
+/** `whole`: the slot is a whole material (index 0), not a mask region. `color`: its own look. */
+type Slot = { partId: string; index: number; whole: boolean; color: string };
 type MatEntry = {
   name: string;
   material: THREE.MeshPhysicalMaterial;
@@ -52,6 +54,18 @@ type MatEntry = {
   means: THREE.Vector3[];
   base: { roughness: number; clearcoat: number; sheen: number };
 };
+/** Everything a part recolors: its own source, plus any extra materials or regions it also owns
+ *  (stray pieces such as a stitch line or a tread that belong with it). `color` is the look of
+ *  the piece in the model, which "untouched" means for regions. */
+function owned(part: PartDef): { material: string; region?: number; color: string }[] {
+  const src = part.source;
+  if (!src) return [];
+  return [
+    { material: src.material, region: src.region, color: src.color ?? part.default.color },
+    ...(src.also ?? []).map((a) => ({ material: a.material, region: a.region, color: a.color ?? src.color ?? part.default.color })),
+  ];
+}
+
 type MeshEntry = { name: string; materialName: string; geometry: THREE.BufferGeometry };
 
 const MASK_SIZE = 256;
@@ -75,18 +89,48 @@ function weightAt(entry: MatEntry, u: number, v: number, index: number): number 
   return px[(y * MASK_SIZE + x) * 4 + (index % PER_MASK)]! / 255;
 }
 
-/** Average color of a texture image, in linear RGB. */
-function averageColor(image: CanvasImageSource): THREE.Vector3 {
+/**
+ * Average color, in linear RGB, of the texels a material's meshes actually use. Atlases are often
+ * shared (a canvas upper, a tan sole and a white label on one image) and padded with black, so
+ * averaging the whole image would give a mean far from the part's own color, and every recolor
+ * would come out too dark or washed out. The UV triangles are rasterized into a coverage mask.
+ */
+function averageColor(image: CanvasImageSource, geometries: THREE.BufferGeometry[]): THREE.Vector3 {
+  const S = 128;
   const c = document.createElement("canvas");
-  c.width = c.height = 16;
-  const ctx = c.getContext("2d")!;
-  ctx.drawImage(image, 0, 0, 16, 16);
-  const d = ctx.getImageData(0, 0, 16, 16).data;
+  c.width = c.height = S;
+  const ctx = c.getContext("2d", { willReadFrequently: true })!;
+  ctx.drawImage(image, 0, 0, S, S);
+  const d = ctx.getImageData(0, 0, S, S).data;
+  const cov = document.createElement("canvas");
+  cov.width = cov.height = S;
+  const cctx = cov.getContext("2d", { willReadFrequently: true })!;
+  const path = new Path2D();
+  for (const g of geometries) {
+    const uv = g.getAttribute("uv");
+    if (!uv) continue;
+    const idx = g.index;
+    const count = idx ? idx.count : uv.count;
+    const at = (k: number) => (idx ? idx.getX(k) : k);
+    const wrap = (x: number) => (x - Math.floor(x)) * S;
+    for (let t = 0; t + 2 < count; t += 3) {
+      const a = at(t), b = at(t + 1), e = at(t + 2);
+      path.moveTo(wrap(uv.getX(a)), wrap(uv.getY(a)));
+      path.lineTo(wrap(uv.getX(b)), wrap(uv.getY(b)));
+      path.lineTo(wrap(uv.getX(e)), wrap(uv.getY(e)));
+      path.closePath();
+    }
+  }
+  cctx.fillStyle = "#fff";
+  cctx.fill(path);
+  const m = cctx.getImageData(0, 0, S, S).data;
+  const covered = m.some((v, i) => i % 4 === 3 && v > 0);
   const col = new THREE.Color();
   const sum = new THREE.Vector3();
   let n = 0;
   for (let i = 0; i < d.length; i += 4) {
-    if (d[i + 3]! < 10) continue;
+    if (covered && m[i + 3]! < 128) continue;
+    if (d[i + 3]! < 10 || Math.max(d[i]!, d[i + 1]!, d[i + 2]!) < 3) continue;
     col.setRGB(d[i]! / 255, d[i + 1]! / 255, d[i + 2]! / 255, THREE.SRGBColorSpace);
     sum.add(new THREE.Vector3(col.r, col.g, col.b));
     n++;
@@ -247,10 +291,8 @@ export function TintModel({ product, design, interactive = true, gate, children,
     const plan: { material: string; urls: string[] }[] = [];
     const base = product.modelUrl.replace(/\.glb$/, "");
     const byMat = new Map<string, number>();
-    for (const p of product.parts) {
-      if (p.source?.region === undefined) continue;
-      byMat.set(p.source.material, Math.max(byMat.get(p.source.material) ?? 0, p.source.region));
-    }
+    for (const p of product.parts)
+      for (const o of owned(p)) if (o.region !== undefined) byMat.set(o.material, Math.max(byMat.get(o.material) ?? 0, o.region));
     for (const [material, maxRegion] of byMat) {
       const dir = `${base}/${safe(material)}`;
       plan.push({ material, urls: Array.from({ length: Math.floor(maxRegion / PER_MASK) + 1 }, (_, i) => `${dir}/mask-${i}.png`) });
@@ -321,22 +363,24 @@ export function TintModel({ product, design, interactive = true, gate, children,
         t.flipY = false;
         t.needsUpdate = true;
       }
-      const slots: Slot[] = product.parts
-        .filter((p) => p.source?.material === name)
-        .map((p) => ({ partId: p.id, index: p.source!.region ?? 0 }));
+      const slots: Slot[] = product.parts.flatMap((p) =>
+        owned(p)
+          .filter((o) => o.material === name)
+          .map((o) => ({ partId: p.id, index: o.region ?? 0, whole: o.region === undefined, color: o.color })),
+      );
       const means = Array.from({ length: SLOTS }, () => new THREE.Vector3(0.5, 0.5, 0.5));
       // Whole-material parts: the material's own look is "untouched".
-      const whole = slots.find((s) => product.parts.find((p) => p.id === s.partId)?.source?.region === undefined);
+      const whole = slots.find((s) => s.whole);
       if (whole) {
         const c = std.color ?? new THREE.Color(1, 1, 1);
         const img = std.map?.image as CanvasImageSource | undefined;
-        const avg = img ? averageColor(img) : new THREE.Vector3(1, 1, 1);
+        const geos = meshes.filter((m) => m.materialName === name).map((m) => m.geometry);
+        const avg = img ? averageColor(img, geos) : new THREE.Vector3(1, 1, 1);
         means[0]!.set(avg.x * c.r, avg.y * c.g, avg.z * c.b);
       }
       for (const s of slots) {
-        const part = product.parts.find((p) => p.id === s.partId)!;
-        if (part.source?.region !== undefined) {
-          const m = linear(part.source.color ?? part.default.color);
+        if (!s.whole) {
+          const m = linear(s.color);
           const c = std.color ?? new THREE.Color(1, 1, 1);
           means[s.index]!.set(m.r * c.r, m.g * c.g, m.b * c.b);
         }
@@ -367,11 +411,13 @@ export function TintModel({ product, design, interactive = true, gate, children,
         material.clearcoat = 1e-4;
         material.sheen = 1e-4;
       }
+      // For inspection (scripts/qa): what "untouched" means for each slot.
+      material.userData.sfMeans = means;
       installShader(material, entry, masks);
       out.set(name, entry);
     }
     return out;
-  }, [gltf.scene, product, maskPlan, maskTextures]);
+  }, [gltf.scene, product, maskPlan, maskTextures, meshes]);
   useEffect(() => () => entries.forEach((e) => e.material.dispose()), [entries]);
 
   // Anchors: for each part, the surface vertex nearest the centroid of its region.
@@ -466,7 +512,7 @@ export function TintModel({ product, design, interactive = true, gate, children,
         const i = slot.index;
         const cur = entry.uniforms.uTarget.value[i]!;
         if (changedColor) {
-          tmpColor.set(cfg.color);
+          albedo(cfg.color, tmpColor);
           target.set(tmpColor.r, tmpColor.g, tmpColor.b);
           entry.uniforms.uOn.value[i] = 1;
         } else target.copy(entry.means[i]!);
@@ -476,7 +522,7 @@ export function TintModel({ product, design, interactive = true, gate, children,
 
         const finishChanged = cfg.material !== part.default.material || cfg.roughness !== undefined;
         const preset = MATERIALS[cfg.material];
-        if (part.source?.region !== undefined) {
+        if (!slot.whole) {
           entry.uniforms.uRoughOn.value[i] = finishChanged ? 1 : 0;
           entry.uniforms.uRough.value[i] = cfg.roughness ?? preset.roughness;
           entry.uniforms.uCoat.value[i] = preset.clearcoat;
