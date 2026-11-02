@@ -1,0 +1,194 @@
+{
+  "meshes": [
+    {
+      "node": "Soul.001_Sole_0",
+      "mesh": "Soul.001_Sole_0",
+      "material": "Sole"
+    },
+    {
+      "node": "Cube.001_Sole_0",
+      "mesh": "Cube.001_Sole_0",
+      "material": "Sole"
+    },
+    {
+      "node": "Cube.003_Sole_0",
+      "mesh": "Cube.003_Sole_0",
+      "material": "Sole"
+    },
+    {
+      "node": "Cylinder.004_Material_0",
+      "mesh": "Cylinder.004_Material_0",
+      "material": "Material"
+    },
+    {
+      "node": "Cylinder.005_Material_0",
+      "mesh": "Cylinder.005_Material_0",
+      "material": "Material"
+    },
+    {
+      "node": "Cylinder.006_Material_0",
+      "mesh": "Cylinder.006_Material_0",
+      "material": "Material"
+    },
+    {
+      "node": "Cylinder.007_Material_0",
+      "mesh": "Cylinder.007_Material_0",
+      "material": "Material"
+    },
+    {
+      "node": "Laces_Lace.001_0",
+      "mesh": "Laces_Lace.001_0",
+      "material": "Lace.001"
+    },
+    {
+      "node": "Plane.019_Sole_0",
+      "mesh": "Plane.019_Sole_0",
+      "material": "Sole"
+    },
+    {
+      "node": "Plane.020_Sole_0",
+      "mesh": "Plane.020_Sole_0",
+      "material": "Sole"
+    },
+    {
+      "node": "Plane.021_Black_Leather_0",
+      "mesh": "Plane.021_Black_Leather_0",
+      "material": "Black_Leather"
+    },
+    {
+      "node": "Plane.021_Black_Leather_0",
+      "mesh": "Plane.021_Black_Leather_0",
+      "material": "Black_Leather"
+    },
+    {
+      "node": "Plane.022_Sole_0",
+      "mesh": "Plane.022_Sole_0",
+      "material": "Sole"
+    },
+    {
+      "node": "Plane.023_Black_Leather_0",
+      "mesh": "Plane.023_Black_Leather_0",
+      "material": "Black_Leather"
+    },
+    {
+      "node": "Plane.024_Sole_0",
+      "mesh": "Plane.024_Sole_0",
+      "material": "Sole"
+    },
+    {
+      "node": "Plane.025_Leather_Mat_1_0",
+      "mesh": "Plane.025_Leather_Mat_1_0",
+      "material": "Leather_Mat_1"
+    },
+    {
+      "node": "Plane.026_leather_2_0",
+      "mesh": "Plane.026_leather_2_0",
+      "material": "leather_2"
+    },
+    {
+      "node": "Plane.027_back_Label_mat_0",
+      "mesh": "Plane.027_back_Label_mat_0",
+      "material": "back_Label_mat"
+    },
+    {
+      "node": "Plane.028_Leather_Mat_1_0",
+      "mesh": "Plane.028_Leather_Mat_1_0",
+      "material": "Leather_Mat_1"
+    },
+    {
+      "node": "Plane.029_leather_2_0",
+      "mesh": "Plane.029_leather_2_0",
+      "material": "leather_2"
+    },
+    {
+      "node": "Plane.030_Inner_0",
+      "mesh": "Plane.030_Inner_0",
+      "material": "Inner"
+    },
+    {
+      "node": "Plane.031_Inner_0",
+      "mesh": "Plane.031_Inner_0",
+      "material": "Inner"
+    },
+    {
+      "node": "Plane.032_Tounge_0",
+      "mesh": "Plane.032_Tounge_0",
+      "material": "Tounge"
+    },
+    {
+      "node": "Plane.033_back_Label_mat_0",
+      "mesh": "Plane.033_back_Label_mat_0",
+      "material": "back_Label_mat"
+    },
+    {
+      "node": "Plane.034_Tounge_0",
+      "mesh": "Plane.034_Tounge_0",
+      "material": "Tounge"
+    },
+    {
+      "node": "Plane.036_Leather_Mat_1_0",
+      "mesh": "Plane.036_Leather_Mat_1_0",
+      "material": "Leather_Mat_1"
+    },
+    {
+      "node": "Plane.037_Back_Side_inner_0",
+      "mesh": "Plane.037_Back_Side_inner_0",
+      "material": "Back_Side_inner"
+    }
+  ],
+  "regions": {
+    "Sole": [
+      {
+        "region": 0,
+        "mean": "#8569F3",
+        "share": 0.4158
+      },
+      {
+        "region": 1,
+        "mean": "#FEFEFF",
+        "share": 0.1738
+      },
+      {
+        "region": 2,
+        "mean": "#000000",
+        "share": 0.4104
+      }
+    ],
+    "Leather_Mat_1": [
+      {
+        "region": 0,
+        "mean": "#949494",
+        "share": 0.3789
+      },
+      {
+        "region": 1,
+        "mean": "#B8B8B8",
+        "share": 0.6211
+      }
+    ],
+    "Inner": [
+      {
+        "region": 0,
+        "mean": "#CCCCCC",
+        "share": 0.6697
+      },
+      {
+        "region": 1,
+        "mean": "#2C2366",
+        "share": 0.3303
+      }
+    ],
+    "Tounge": [
+      {
+        "region": 0,
+        "mean": "#FDFCFD",
+        "share": 0.614
+      },
+      {
+        "region": 1,
+        "mean": "#694BAC",
+        "share": 0.386
+      }
+    ]
+  }
+}

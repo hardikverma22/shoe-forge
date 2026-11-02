@@ -9,6 +9,7 @@ import type { ProductDef } from "@/lib/products/schema";
 import type { Design } from "@/lib/design/types";
 import { useStudioUI } from "@/lib/design/ui-store";
 import { applyMaterial, useMaterialMaps, useTextureCache } from "@/lib/materials/textures";
+import { albedo } from "@/lib/materials/albedo";
 import { MATERIALS } from "@/lib/materials/presets";
 import { computeLayout } from "@/lib/three/layout";
 import { useSceneMeta } from "@/lib/three/scene-store";
@@ -166,7 +167,7 @@ export function ProductModel({
   useEffect(() => {
     for (const part of product.parts) {
       const cfg = design.parts[part.id];
-      if (cfg) targets.set(part.id, new THREE.Color(cfg.color));
+      if (cfg) targets.set(part.id, albedo(cfg.color));
     }
   }, [design.parts, product.parts, targets]);
 

@@ -1,0 +1,130 @@
+{
+  "meshes": [
+    {
+      "node": "Cuero_Cuero_0",
+      "mesh": "Cuero_Cuero_0",
+      "material": "Cuero"
+    },
+    {
+      "node": "DetalleTrasero2_Caf��.2_0",
+      "mesh": "DetalleTrasero2_Caf��.2_0",
+      "material": "Caf.2"
+    },
+    {
+      "node": "almohadillas_Almohadilla2_0",
+      "mesh": "almohadillas_Almohadilla2_0",
+      "material": "Almohadilla2"
+    },
+    {
+      "node": "almohadillas_Almohadilla_0",
+      "mesh": "almohadillas_Almohadilla_0",
+      "material": "Almohadilla"
+    },
+    {
+      "node": "DetalleMedios2_DetalleMedio_0",
+      "mesh": "DetalleMedios2_DetalleMedio_0",
+      "material": "DetalleMedio"
+    },
+    {
+      "node": "bordesCordones_BordesCordones_0",
+      "mesh": "bordesCordones_BordesCordones_0",
+      "material": "BordesCordones"
+    },
+    {
+      "node": "bordesCordones_CueroCordones_0",
+      "mesh": "bordesCordones_CueroCordones_0",
+      "material": "CueroCordones"
+    },
+    {
+      "node": "Cordones_Cordones_0",
+      "mesh": "Cordones_Cordones_0",
+      "material": "Cordones"
+    },
+    {
+      "node": "Cilindro_Cilindro_0",
+      "mesh": "Cilindro_Cilindro_0",
+      "material": "Cilindro"
+    },
+    {
+      "node": "Adidas_Caf��_0",
+      "mesh": "Adidas_Caf��_0",
+      "material": "material"
+    },
+    {
+      "node": "Plantilla_Plantilla_0",
+      "mesh": "Plantilla_Plantilla_0",
+      "material": "Plantilla"
+    },
+    {
+      "node": "Lengua_Logo_0",
+      "mesh": "Lengua_Logo_0",
+      "material": "Logo"
+    },
+    {
+      "node": "Lengua_Lengua_0",
+      "mesh": "Lengua_Lengua_0",
+      "material": "Lengua"
+    },
+    {
+      "node": "Lengua_Almohadilla2_0",
+      "mesh": "Lengua_Almohadilla2_0",
+      "material": "Almohadilla2"
+    },
+    {
+      "node": "Sujetador_Sujetador_0",
+      "mesh": "Sujetador_Sujetador_0",
+      "material": "Sujetador"
+    },
+    {
+      "node": "Orificios_Orificios_0",
+      "mesh": "Orificios_Orificios_0",
+      "material": "Orificios"
+    },
+    {
+      "node": "Suela_Suela2_0",
+      "mesh": "Suela_Suela2_0",
+      "material": "Suela2"
+    },
+    {
+      "node": "Suela_Suela_0",
+      "mesh": "Suela_Suela_0",
+      "material": "Suela"
+    },
+    {
+      "node": "MiniCorrea_correa_0",
+      "mesh": "MiniCorrea_correa_0",
+      "material": "correa"
+    },
+    {
+      "node": "DetalleCordon_DetalleCordones_0",
+      "mesh": "DetalleCordon_DetalleCordones_0",
+      "material": "DetalleCordones"
+    },
+    {
+      "node": "DetalleFrente_DetalleFrente_0",
+      "mesh": "DetalleFrente_DetalleFrente_0",
+      "material": "DetalleFrente"
+    },
+    {
+      "node": "Correa_correa_0",
+      "mesh": "Correa_correa_0",
+      "material": "correa"
+    },
+    {
+      "node": "Correa_correadetalle_0",
+      "mesh": "Correa_correadetalle_0",
+      "material": "correadetalle"
+    },
+    {
+      "node": "CordonTrasero_Cuerda_0",
+      "mesh": "CordonTrasero_Cuerda_0",
+      "material": "Cuerda"
+    },
+    {
+      "node": "Zapato_Frente_0",
+      "mesh": "Zapato_Frente_0",
+      "material": "Frente"
+    }
+  ],
+  "regions": {}
+}
