@@ -9,6 +9,8 @@ test("the catalog filters by category and opens a brand shoe in the studio", asy
   await expect(cards).toHaveCount(1);
   await page.getByRole("link", { name: /Vans Old Skool/ }).click();
   await expect(page).toHaveURL(/\/studio\/old-skool/);
+  // The studio mounts a beat after the URL changes; until then there is no loader to wait out.
+  await expect(page.getByRole("main", { name: "Shoe studio" })).toBeVisible();
   await expect(page.getByRole("status")).toHaveCount(0, { timeout: 30_000 });
   await expect(page.getByRole("link", { name: /3D model: kanesk06/ })).toBeVisible();
 });
